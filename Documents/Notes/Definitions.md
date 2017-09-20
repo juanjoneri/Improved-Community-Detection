@@ -12,7 +12,7 @@ $W=\begin{bmatrix}0 & 1 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\1 & 0 & 1 & 1 & 0 & 0 &
 
 Would represent the following graph:
 
-![Small_Graph](C:\Users\juanj\Projects\RSCH\Documents\Notes\Small_Graph.png)
+![Small_Graph](http://www.juanjoneri.com/img/RSCH/Small_Graph.png)
 
 ---
 
@@ -24,7 +24,7 @@ $F_{W}=\begin{bmatrix}1&0&0\\1&0&0\\1&0&0\\0&1&0\\0&1&0\\0&1&0\\0&1&0\\0&0&1\\0&
 
 Which would represent the following partition:
 
-![Small_Graph_Partition](C:\Users\juanj\Projects\RSCH\Documents\Notes\Small_Graph_Partition.png)
+![Small_Graph_Partition](http://www.juanjoneri.com/img/RSCH/Small_Graph_Partition.png)
 
 ---
 
