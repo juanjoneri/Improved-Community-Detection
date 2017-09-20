@@ -15,9 +15,12 @@ Sparse matrix representing connections of a graph. For example, we call the foll
 $W=\begin{bmatrix}0 & 1 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\1 & 0 & 1 & 1 & 0 & 0 & 0 & 0 & 0 & 0\\1 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\0 & 1 & 0 & 0 & 1 & 0 & 1 & 0 & 0 & 0\\0 & 0 & 0 & 1 & 0 & 1 & 1 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 1 & 0 & 1 & 0 & 0 & 0\\0 & 0 & 0 & 1 & 1 & 1 & 0 & 0 & 1 & 0\\0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 1\\0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 & 0 & 1\\0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 & 0\\\end{bmatrix}$
 
 Would represent the following graph:
+
+<<<<<<< Updated upstream
 ![Small_Graph](http://www.juanjoneri.com/img/RSCH/Small_Graph.png)
+=======
 
-
+>>>>>>> Stashed changes
 
 ---
 
@@ -29,8 +32,11 @@ $F_{W}=\begin{bmatrix}1&0&0\\1&0&0\\1&0&0\\0&1&0\\0&1&0\\0&1&0\\0&1&0\\0&0&1\\0&
 
 Which would represent the following partition:
 
+<<<<<<< Updated upstream
 ![Small_Graph_Partition](http://www.juanjoneri.com/img/RSCH/Small_Graph_Partition.png)
-![Small_Graph_Partition](http://www.juanjoneri.com/img/RSCH/Small_Graph_Partition.png)
+=======
+![Small_Graph_Partition](/Users/ndibbern/Documents/Main/LMU-RSCH-Fall17/Documents/Notes/Small_Graph_Partition.png)
+>>>>>>> Stashed changes
 
 ---
 
