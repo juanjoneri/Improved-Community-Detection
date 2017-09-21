@@ -22,6 +22,8 @@ For example, Small Graph would have the following D matrix associated:
 
 $D_{W}=\begin{bmatrix}2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\0 & 3 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\0 & 0 & 2 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 3 & 0 & 0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 3 & 0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0 & 2 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0 & 0 & 4 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0 & 0 & 0 & 2 & 0 & 0\\0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 3 & 0\\0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 2\\\end{bmatrix}$
 
+**TODO:** show what is WD-1 (becomes colom stochastic  (suma a uno en una de las directions))
+
 ---
 
 ## $F$
@@ -55,7 +57,13 @@ It is important to note some things:
 
 $\Omega_{ij} = \Omega . [0,0,…,1,0,0,…] = [\omega_{1j},…,\omega_{nj}]$
 
-The above represents the steady state distribution, meaning that $\omega_{ij}$ is a valid notion of similarity because it turns to be the probability of a random walk to be in a specific node. **TODO EXPAND ON THIS AND ASK FOR HELP: WHY IS THIS NOTION OF W A VALID NOTION FOR SIMILARITY?** 
+The above represents the steady state distribution, meaning that $\omega_{ij}$ is a valid notion of similarity because it turns to be the probability of a random walk to be in a specific node. **TODO EXPAND ON THIS AND ASK FOR HELP: WHY IS THIS NOTION OF W A VALID NOTION FOR SIMILARITY?: DONE!! SEE BELLOW AND MAKE IT PRETTY** 
+
+
+
+*Claim:* $ \Omega_{\alpha} =( \frac{1}{1- \alpha}(I - \alpha WD^{-1}))^{-1} )^{-1}= \frac{\alpha}{1-\alpha}L$ 
+
+Proof: $ \Omega_{\alpha} = \frac{1}{1- \alpha}((1-\alpha)I +/alpha I- \alpha WD^{-1})^{-1} = = \frac{\alpha}{1-\alpha}L  $ 
 
 ###### Proving $\Omega$ is positive definite:
 
@@ -79,9 +87,11 @@ $$x=\lambda A^{-1}x$$
 
 $$\frac{1}{\lambda} = A^{-1}x$$
 
+ *Claim:* If $/lambda$ is the eigen value of L, then $(1+ /frac{\alpha}{1-\alpha} \lambda)$ is an eigenvalue of $\Omega$
 
+*Proof:* $u^T \Omega u= <u, \Omega u> = (I + \frac{\alpha}{1-\alpha})$ 
 
- 
+**TODO: ANOTAR EL RESTO DE LAS NOTAS DE JUANJO**
 
 
 
@@ -113,25 +123,45 @@ $p^{k+1}(i) = \sum_j p^k(j) \frac{w_{ij}}{d_j}$
 
 $p_i^{k+1} = \sum_j \frac{w_{ij}}{d_j}p_j^k = WD^{-1}p^k$
 
-Now $p^{k+1} = \alpha W D^{-1}p^k + (1-\alpha) \frac{\mathbb{I}_A}{|A|}$ (Where A is a subset of the whole set, $\mathbb{I}_A$ are just 1 or 0) and $|A|$ size.
+Now we define a *"stochastic process"* such that: $p^{k+1} = \alpha W D^{-1}p^k + (1-\alpha) \frac{\mathbb{I}_A}{|A|}$ (Where A is a subset of the whole set, $\mathbb{I}_A$ is the indicator function (meaning it has 1 on points that belong on set A and 0 on the others, and $|A|$ size)
+
+Note: $WD^{-1}p^k$ is a probability vector and so is $\frac{\mathbb{I}_A}{|A|}$ so adding these two still give a probability vector
 
 Say $\alpha = 0.8$, then this means 80$\%$ chance to go to a near vertex and 20 $\%$ chance to transporting to set A.
 
-Why do we do this?
+###### Why do we do this?
 
 If we start with any distribution that is proportional to the degree of vertex and wait to infinity, the chances for the walker to be in a certain point is uniform across the graph.
 
 But note now that with the modification (adding the $+(1-\alpha)$ etc) now there is a higher chance that we bring it to the set A, creating then a "bump" in this set. ( The reason for this is that a walker can only move to its neighbors so once it goes into the set A it is harder to get out of it). 
 
+Now, we want to determine the steady state of this stochastic process,:
+
 Heat bump: $p^{\Omega^{\alpha}} | _A = lim_{k \to \infty} p^k$ $\to$ Limiting distribution 
 
-\textit{Note:} if $\alpha = 0$ this just gives us uniform distribution on set A.
-
-Now, 
 $$Ip^{\infty} = \alpha W D^{-1} p^{\infty} + (1-\alpha) \frac{\mathbb{I}_A}{|A|} $$
-$$(I - \alpha W D^{-1}) p^{\infty} = (1-\alpha) \frac{\mathbb{I}_A}{|A|} $$
+$$(I - \alpha W D^{-1}) p^{\infty} = (1-\alpha) \frac{\mathbb{I}_A}{|A|} $$ **(#)**
 $$\frac{1}{1-\alpha} (I-\alpha WD^{-1}) p^{\infty} =\frac{\mathbb{I}_A}{|A|}$$
-$$p^{\infty} = M_\alpha ^{-1} \frac{\mathbb{I}_A}{|A|} = p^{\Omega ^ {\alpha}}|_A$$
+$$p^{\infty} = \Omega_\alpha ^{-1} \frac{\mathbb{I}_A}{|A|} = p^{\Omega ^ {\alpha}}|_A$$
 Where
-$$ M_{\alpha} = \frac{1}{1- \alpha}(I - \alpha WD^{-1})$$
-is considered to be $W_{smooth}$
+$$ \Omega_{\alpha} = \frac{1}{1- \alpha}(I - \alpha WD^{-1})$$
+considered to be $W_{smooth}$.
+
+Note: it is important to note that in practice we *cannot* compute this $\Omega$ since it is a full matrix. Instead, we compute $p^{\infty}$ by doing the equation shown before and iterating until convergence (maybe 30 times). Again, we do not have acces to $\Omega$ but we can have access to $\Omega.  \frac{\mathbb{I}_A}{|A|} $
+
+###### So now, why can we think of this $\Omega_{ij}$ a measure of similarity between vertex $i$ and $j$?
+
+Take $A = \{j\}$ and Redo reasoning from before **(#)** 
+
+$$p^{\infty}(i) = P_\{j\}(i)$$ probability to be on $i$ if the stochastic process teletransport to $j$ .
+
+So this gives us a similarity between the two vertex because if they are closs together then it has a high value, and if they are far away the probability is low for $j$  to get to $i$ (because it get traped going back to $j$ or near $j$ all the time).
+
+Now that we have a measure of similarity we have the following claim:
+
+*Claim:* $p^{\infty}_{\{j\}}(i) = \Omega_{ij} = \omega_{ij} $ 
+
+*Proof:* $p_{i}^{\infty} = \Omega^{-1} . [0,0…1,…] $(1 in position j because in this case our set is only one point ). So then this just is the same as $\Omega_{ij}$. (multiplying a matrix by a vector with only one 1 in a row returns that row in the matrix).
+
+
+
