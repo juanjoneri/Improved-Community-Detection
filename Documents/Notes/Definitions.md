@@ -57,10 +57,10 @@ $\Omega=Id+(\frac{\alpha}{1-\alpha}L)^{-1}$
 
 ---
 
+$\vec{p}$ is a vector representing the probability for the random walker to be at each node. Hence, $p^{k+1}$ tells us the probability of where this random walker will be next based on were it was before, the definition of the graph and the links that each node has.=:
+
 $p^{k +1} = WD^{-1}p^k$
 
-where p is a vector representing the probability for the random walker to be at each node. so $p^{k+1}$ tells us the probability of where this random walker will be next based on were it was before, the definition of the graph and the links that each node has.
-=
 Derivate
 
 $P(X ^{k+1}=i) = \sum_j P(X^{k}=j)P(X^k = j)$
