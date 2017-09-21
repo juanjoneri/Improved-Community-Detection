@@ -115,7 +115,26 @@ $\vec{p}$ is a vector representing the probability for the random walker to be a
 
 $p^{k +1} = WD^{-1}p^k$
 
-Derivate
+
+
+### Example
+
+For our Small Graph, p would look like the following after 500 steps of the following code:
+
+```matlab
+// W and D as defined above
+p = ones(10,1)./10;
+
+graphPlot(W);
+for i = 1:150
+    p = W*(Dm*p);
+end
+p
+```
+
+$\vec{p}^{\infty}=\begin{bmatrix}0.0769\\0.1154\\0.0769\\0.1154\\0.1154\\0.0769\\    0.1538\\0.0769\\0.1154\\0.0769\end{bmatrix}$
+
+#### Derivation
 
 $P(X ^{k+1}=i) = \sum_j P(X^{k}=j)P(X^k = j)$
 
