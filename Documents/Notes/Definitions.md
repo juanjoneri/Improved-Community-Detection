@@ -16,7 +16,7 @@ Would represent the following graph:
 ---
 ## $D$
 
-Diagonal matrix containing the degree of edges (number of conections) for each node in a sparce matrix $W$ . 
+Diagonal matrix containing the degree of edges (number of conections) for each node in a sparce matrix $W.$  
 
 For example, Small Graph would have the following D matrix associated:
 
@@ -38,12 +38,16 @@ Which would represent the following partition:
 
 ## $W_{Smooth} ,\Omega$
 
-Also know as the **"Similarity Matrix of W"** is  a full matrix that contains a **measure of similarity** between some starting node $W_{i,j}$ and every other node in $W$. Can be interpreted as the probability of a random walker ending at each of the points from some starting point $W_{i,j}$.
+Also know as the **"Similarity Matrix of W"** is  a full matrix that contains a **measure of similarity** between some starting node $W_{i,j}$ and every other node in $W$. Can be interpreted as the probability of a random walker ending at each of the points from some starting point $W_{i,j}$. Hence,$\omega_{ij} = P_{A=\{j\}}(i)$.
 
 $\Omega=Id+(\frac{\alpha}{1-\alpha}L)^{-1}$
 
 - $\alpha$ is the probability of the random walker 
-- $L=Id-WD^{-1}​$ is the graph's Laplacian Matrix
+- $L=Id-WD^{-1}$ is the graph's Laplacian Matrix
+
+It is important to note some things:
+
+* $\omega_{ij} = P_{A=\{j\}}(i)$ (in this case we pick our subset $A$ to be just one node $\{j\}$.
 
 ---
 
@@ -55,7 +59,11 @@ $\Omega=Id+(\frac{\alpha}{1-\alpha}L)^{-1}$
 
 ---
 
-$\vec{p}$ is a vector representing the probability for the random walker to be at each node. Hence, $p^{k+1}$ tells us the probability of where this random walker will be next based on were it was before, the definition of the graph and the links that each node has.=:
+$\vec{p}$ is a vector representing the probability for the random walker to be at each node. Hence, $\vec{p^{k+1}}$ tells us the probability of where this random walker will be next, based on:
+
+- were it was before ($\vec{p^k}$)
+- the definition of the graph ($W$)
+- the links that each node has ($D$):
 
 $p^{k +1} = WD^{-1}p^k$
 
