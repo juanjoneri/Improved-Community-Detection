@@ -105,9 +105,7 @@ Recall we want the energy $E$ to be convex, which looks like …. ADD
 
 ## $\vec{p}$
 
----
-
-$\vec{p}$ is a vector representing the probability for the random walker to be at each node. Hence, $\vec{p^{k+1}}$ tells us the probability of where this random walker will be next, based on:
+$\vec{p}​$ is a vector representing the probability for the random walker to be at each node. Hence, $\vec{p^{k+1}}​$ tells us the probability of where this random walker will be next, based on:
 
 - were it was before ($\vec{p^k}$)
 - the definition of the graph ($W$)
@@ -181,6 +179,3 @@ Now that we have a measure of similarity we have the following claim:
 *Claim:* $p^{\infty}_{\{j\}}(i) = \Omega_{ij} = \omega_{ij} $ 
 
 *Proof:* $p_{i}^{\infty} = \Omega^{-1} . [0,0…1,…] $(1 in position j because in this case our set is only one point ). So then this just is the same as $\Omega_{ij}$. (multiplying a matrix by a vector with only one 1 in a row returns that row in the matrix).
-
-
-
