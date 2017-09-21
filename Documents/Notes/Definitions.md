@@ -6,7 +6,11 @@
 
 ## $D$
 
-D = degree of edges (how many conections it has)
+Diagonal matrix containing the degree of edges (number of conections) for each node in a sparce matrix $W$ . 
+
+For example:
+
+
 
 ## $W$
 
