@@ -4,14 +4,6 @@
 
 ---
 
-## $D$
-
-Diagonal matrix containing the degree of edges (number of conections) for each node in a sparce matrix $W$ . 
-
-For example:
-
-
-
 ## $W$
 
 Sparse matrix representing connections of a graph. For example, we call the following graph *Small Graph*:
@@ -21,7 +13,14 @@ $W=\begin{bmatrix}0 & 1 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\1 & 0 & 1 & 1 & 0 & 0 &
 Would represent the following graph:
 ![Small_Graph](http://www.juanjoneri.com/img/RSCH/Small_Graph.png)
 
+---
+## $D$
 
+Diagonal matrix containing the degree of edges (number of conections) for each node in a sparce matrix $W$ . 
+
+For example, Small Graph would have the following D matrix associated:
+
+$D_{W}=\begin{bmatrix}2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\0 & 3 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\0 & 0 & 2 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 3 & 0 & 0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 3 & 0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0 & 2 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0 & 0 & 4 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0 & 0 & 0 & 2 & 0 & 0\\0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 3 & 0\\0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 2\\\end{bmatrix}$
 
 ---
 
@@ -33,7 +32,6 @@ $F_{W}=\begin{bmatrix}1&0&0\\1&0&0\\1&0&0\\0&1&0\\0&1&0\\0&1&0\\0&1&0\\0&0&1\\0&
 
 Which would represent the following partition:
 
-![Small_Graph_Partition](http://www.juanjoneri.com/img/RSCH/Small_Graph_Partition.png)
 ![Small_Graph_Partition](http://www.juanjoneri.com/img/RSCH/Small_Graph_Partition.png)
 
 ---
