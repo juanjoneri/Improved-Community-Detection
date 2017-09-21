@@ -38,20 +38,58 @@ Which would represent the following partition:
 
 ## $W_{Smooth} ,\Omega$
 
-Also know as the **"Similarity Matrix of W"** is  a full matrix that contains a **measure of similarity** between some starting node $W_{i,j}$ and every other node in $W$. Can be interpreted as the probability of a random walker ending at each of the points from some starting point $W_{i,j}$. Hence,$\omega_{ij} = P_{A=\{j\}}(i)$.
+Also know as the **"Similarity Matrix of W"** is  a full matrix that contains a **measure of similarity** between some starting node $W_{i,j}$ and every other node in $W$. Can be interpreted as the probability of a random walker ending at each of the points from some starting point $W_{i,j}$. Hence,$\omega_{ij} = P_{A=\{j\}}(i)$ (in this case we pick our subset $A$ to be just one node $\{j\}$).
 
 $\Omega=Id+(\frac{\alpha}{1-\alpha}L)^{-1}$
 
 - $\alpha$ is the probability of the random walker 
 - $L=Id-WD^{-1}$ is the graph's Laplacian Matrix
+- **TODO** add definition of L as a laplacian matrix
 
 It is important to note some things:
 
-* $\omega_{ij} = P_{A=\{j\}}(i)$ (in this case we pick our subset $A$ to be just one node $\{j\}$.
+* $\alpha = 0 \implies$ stays in original set
+* $\alpha = 1 \implies$ get a uniform distribution (that depends on the degree of the vertex)
+
+###### Now, what is $\Omega_{ij}$? 
+
+$\Omega_{ij} = \Omega . [0,0,…,1,0,0,…] = [\omega_{1j},…,\omega_{nj}]$
+
+The above represents the steady state distribution, meaning that $\omega_{ij}$ is a valid notion of similarity because it turns to be the probability of a random walk to be in a specific node. **TODO EXPAND ON THIS AND ASK FOR HELP: WHY IS THIS NOTION OF W A VALID NOTION FOR SIMILARITY?** 
+
+###### Proving $\Omega$ is positive definite:
+
+To prove monoticity of our algorithm, we need to be using a matrix that is *positive definite* (all *eigen values* are positive). 
+
+**Claim:** $\Omega$ is positive definite:
+
+##### Proof:
+
+Recall: $\Omega=Id+(\frac{\alpha}{1-\alpha}L)^{-1}$
+
+$L $ is positive definite (look at A tutorial on spectral clustering)
+
+*Lemma:* if $A$ is positive definite, so is $A^{-1}$
+
+*Proof:* 
+
+$$Ax = \lambda x$$ 
+
+$$x=\lambda A^{-1}x$$
+
+$$\frac{1}{\lambda} = A^{-1}x$$
+
+
+
+ 
+
+
 
 ---
 
 ## $E$
+
+Recall we want the energy $E$ to be convex, which looks like …. ADD
 
 ---
 
