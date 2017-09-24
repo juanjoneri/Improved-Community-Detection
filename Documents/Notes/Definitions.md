@@ -72,40 +72,45 @@ We will call each of the columns of F an **indicator function** of the subset. A
 
 ## $W_{Smooth} ,\Omega$
 
-Is also a similarity matrix (adjacency matrix) for the graph $W$. However $\Omega$ is a full matrix obtained by looking at the steady state *(limiting probability distribution)* of a Discrete-time Markov chain of the following form (we will redifine this later, but the form will remain the same):
+Is also a similarity matrix (adjacency matrix) for the graph $W$. However $\Omega$ is a full matrix obtained by looking at the steady state *(limiting probability distribution)* of the following Discrete-time Markov chain:
 
-$u^{k+1}=(W\times D^{-1})\ u^k$
+$u^{k+1}=\alpha\ (W\times D^{-1})\ u^k+(1-\alpha)\ (\frac{\mathbb{I}_A}{|A|})$
 
-Where $u​$ is a probability vector *(column stochastic)* representing the "location" of a random walker wandering in the graph at timestep k.
+With $u^{(0)}=\frac{\mathbb{I}_A}{|A|}$ meaning that the random walker is located inside subset $A$
 
-For example, if $u^{(0)}=\begin{bmatrix}0&0&0&0&1&0&0&0&0&0\end{bmatrix}$ after one step, the position of the random walker would be the following:
+This process represents a convex combination of two processes:
 
-$u^{1}=(W\times D^{-1})\ u^0=\begin{bmatrix}0&0&0&1/3&0&1/3&1/3&0&0&0\end{bmatrix}^{T}$
+1. $ \alpha\ (W\times D^{-1})\ u^k$ the random walker visits one of its neghouring nodes with probability $\alpha$
+2. $(1-\alpha)\ (\frac{\mathbb{I}_A}{|A|})$ the random walker gets *teletransported* back to its original position in subset A
 
-after $\infty$ steps *(150)*, $u$ would look like follows:
+This means that:
 
-$u^{\infty}=\begin{bmatrix}0.0769&0.1154&0.0769&0.1154&0.1154&0.0769&0.1538&0.0769&0.1154&0.0769\end{bmatrix}$
+- $\alpha = 0 \implies$ Walker stays confined to the original set
+- $\alpha = 1 \implies$ Get a uniform distribution *(see definition of $u$)*
 
-Because in each step, $u$ was multiplied by $(W\times D^{-1})$ which is column sctchastic, we have $u^{\infty}$ also column stochastic, meaning that it is well defined as aprobability vector.
+When we look at the steady state of this Markov chain we obtain the following relationship:
 
-When defined in this way, the steady state of the process can be obtained by the following relationship on the degree vector $d$ defined in [$D$ section](## $D$)
+$u^{\infty}=\alpha\ (W\times D^{-1})\ u^\infty+(1-\alpha)\ (\frac{\mathbb{I}_A}{|A|})$
 
-$u^{\infty}=\frac{d}{\sum{d_i}}$
+$\therefore u^{\infty}(\mathbb{I}-\alpha\ (W\times D^{-1}))=(1-\alpha)\ (\frac{\mathbb{I}_A}{|A|})$
 
-In general such a process can be applied to any subset $A$ of the graph and $\omega_{ij} = P_{A=\{j\}}(i)$ (in this case we pick our subset $A$ to be just one node $\{j\}$).
+$\therefore u^{\infty}\frac{1}{(1-\alpha)}(\mathbb{I}-\alpha\ (W\times D^{-1}))=\frac{\mathbb{I}_A}{|A|}$
 
-$\Omega=Id+(\frac{\alpha}{1-\alpha}L)^{-1}$
+$\therefore u^{\infty}=\frac{\mathbb{I}_A}{|A|}\times(\frac{\mathbb{I}-\alpha\ (W\times D^{-1})}{1-\alpha})^{-1}$
 
-- $\alpha$ is the probability of the random walker 
-- $L=Id-WD^{-1}$ is the graph's Laplacian Matrix
-- **TODO** add definition of L as a laplacian matrix
+We will define $\Omega$ to be the term in the right:
 
-It is important to note some things:
+$\Omega=(\frac{\mathbb{I}-\alpha\ (W\times D^{-1})}{1-\alpha})^{-1}$
 
-* $\alpha = 0 \implies$ stays in original set
-* $\alpha = 1 \implies$ get a uniform distribution (that depends on the degree of the vertex)
+$\therefore \Omega = ( \frac{\mathbb{I}}{1-\alpha}-\frac{\alpha}{1-\alpha} (W \times D^{-1}))^{-1} $
 
-###### Now, what is $\Omega_{ij}$? 
+$\therefore \Omega = ( \mathbb{I}\frac{1-\alpha+\alpha}{1-\alpha}-\frac{\alpha}{1-\alpha} (W \times D^{-1}))^{-1} $
+
+$\therefore \Omega = ( \mathbb{I}(1+\frac{\alpha}{1-\alpha})-\frac{\alpha}{1-\alpha} (W \times D^{-1}))^{-1} $
+
+$\Omega=(\mathbb{I}+\frac{\alpha}{1-\alpha}L)^{-1}$ where $L=\mathbb{I}-WD^{-1}$ is the graph's Laplacian Matrix
+
+#### Show that $ represents a measure of similarity\Omega_{ij}$ 
 
 $\Omega_{ij} = \Omega . [0,0,…,1,0,0,…] = [\omega_{1j},…,\omega_{nj}]$
 
@@ -151,7 +156,7 @@ $$\frac{1}{\lambda} = A^{-1}x$$
 
 ## $E$
 
-Recall we want the energy $E$ to be convex, which looks like …. ADD
+**TODO**
 
 ---
 
