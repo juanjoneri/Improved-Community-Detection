@@ -14,8 +14,6 @@ Its associated $W$ matrix woudl be the following:
 
 $W=\begin{bmatrix}0 & 1 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\1 & 0 & 1 & 1 & 0 & 0 & 0 & 0 & 0 & 0\\1 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\0 & 1 & 0 & 0 & 1 & 0 & 1 & 0 & 0 & 0\\0 & 0 & 0 & 1 & 0 & 1 & 1 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 1 & 0 & 1 & 0 & 0 & 0\\0 & 0 & 0 & 1 & 1 & 1 & 0 & 0 & 1 & 0\\0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 1\\0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 & 0 & 1\\0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 & 0\\\end{bmatrix}$
 
-
-
 ---
 ## $D$
 
@@ -25,9 +23,11 @@ For example, *Small Graph* would have the following D matrix associated:
 
 $D_{W}=\begin{bmatrix}2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\0 & 3 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\0 & 0 & 2 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 3 & 0 & 0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 3 & 0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0 & 2 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0 & 0 & 4 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0 & 0 & 0 & 2 & 0 & 0\\0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 3 & 0\\0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 2\\\end{bmatrix}$
 
-This can be thought of as the diagonal matrix of the following vector
+This can be thought of as the diagonal matrix of the following vector we will call lower case $d$
 
-$diag(\begin{bmatrix}2&3&2&3&3&2&4&2&3&2\end{bmatrix}^T)$
+$d=\begin{bmatrix}2&3&2&3&3&2&4&2&3&2\end{bmatrix}^T$
+
+$D=diag(d)$
 
 This can be implemented in matlab using the following code
 
@@ -38,9 +38,7 @@ end
 D = diag(D');
 ```
 
-
-
-Note that $W\times D^{-1}$ is column stochastic since the definition of D makes it so that each individual column will add up to 1. This means that in a matrix product, $(W\times D^{-1})\times\vec{v}$ the vector $\vec{v}$ will keep this property
+Note that $W\times D^{-1}$ is column stochastic since the definition of D makes it so that each individual column will add up to 1. This means that in a matrix product, $(W\times D^{-1})\times\vec{v}$ the vector $\vec{v}$ will keep this property (of being a stochastic row vector)
 
 For this matrix, $W\times D^{-1}$ would look like the following:
 
@@ -72,7 +70,27 @@ Which would represent the following partition of W:
 
 ## $W_{Smooth} ,\Omega$
 
-Also know as the **"Similarity Matrix of W"** is  a full matrix that contains a **measure of similarity** between some starting node $W_{i,j}$ and every other node in $W$. Can be interpreted as the probability of a random walker ending at each of the points from some starting point $W_{i,j}$. Hence,$\omega_{ij} = P_{A=\{j\}}(i)$ (in this case we pick our subset $A$ to be just one node $\{j\}$).
+Is also a similarity matrix (adjacency matrix) for the graph $W$. However $\Omega$ is a full matrix obtained by looking at the steady state *(limiting probability distribution)* of a Discrete-time Markov chain of the following form (we will redifine this later, but the form will remain the same):
+
+$u^{k+1}=(W\times D^{-1})\ u^k$
+
+Where $u$ is a probability vector *(column stochastic)* representing the "location" of a random walker wandering in the graph at timestep k.
+
+For example, if $u^{(0)}=\begin{bmatrix}0&0&0&0&1&0&0&0&0&0\end{bmatrix}$ after one step, the position of the random walker would be the following:
+
+$u^{1}=(W\times D^{-1})\ u^0=\begin{bmatrix}0&0&0&1/3&0&1/3&1/3&0&0&0\end{bmatrix}^{T}$
+
+after $\infty$ steps (150), u would look like follows:
+
+$u^{\infty}=\begin{bmatrix}0.0769&0.1154&0.0769&0.1154&0.1154&0.0769&0.1538&0.0769&0.1154&0.0769\end{bmatrix}$
+
+Because in each step, $u$ was multiplied by $(W\times D^{-1})$ which is column sctchastic, we have $u^{\infty}$ also column stochastic, meaning that it is well defined as aprobability vector.
+
+When defined in this way, the steady state of the process can be obtained by the following relationship on the degree vector $d$ defined in [$D$ section](## $D$)
+
+$u^{\infty}=\frac{d}{\sum{d_i}}$
+
+*Is*  a full matrix that contains a **measure of similarity** between some starting node $W_{i,j}​$ and every other node in $W​$. Can be interpreted as the probability of a random walker ending at each of the points from some starting point $W_{i,j}​$. Hence,$\omega_{ij} = P_{A=\{j\}}(i)​$ (in this case we pick our subset $A​$ to be just one node $\{j\}​$).
 
 $\Omega=Id+(\frac{\alpha}{1-\alpha}L)^{-1}$
 

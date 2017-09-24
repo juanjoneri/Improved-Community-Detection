@@ -16,9 +16,9 @@ graphPlot(W);
 
 %Degree of the nodes
 for i=1:10
-    D(i) = sum(W(i,:));
+    d(i) = sum(W(i,:));
 end
-D = diag(D');
+D = diag(d');
 Dm = D^(-1);
 
 %Original position of random walker
@@ -29,4 +29,3 @@ for i = 1:150
     p = W*(Dm*p);
 end
 p'
-sum(p)
