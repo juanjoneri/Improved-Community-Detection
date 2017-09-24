@@ -8,10 +8,13 @@
 
 Sparse matrix representing connections of a graph. For example, we call the following graph *Small Graph*:
 
+![Small_Graph](http://www.juanjoneri.com/img/RSCH/Small_Graph.png)
+
+Its associated $W$ matrix woudl be the following:
+
 $W=\begin{bmatrix}0 & 1 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\1 & 0 & 1 & 1 & 0 & 0 & 0 & 0 & 0 & 0\\1 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\0 & 1 & 0 & 0 & 1 & 0 & 1 & 0 & 0 & 0\\0 & 0 & 0 & 1 & 0 & 1 & 1 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 1 & 0 & 1 & 0 & 0 & 0\\0 & 0 & 0 & 1 & 1 & 1 & 0 & 0 & 1 & 0\\0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 1\\0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 & 0 & 1\\0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 & 0\\\end{bmatrix}$
 
-Would represent the following graph:
-![Small_Graph](http://www.juanjoneri.com/img/RSCH/Small_Graph.png)
+
 
 ---
 ## $D$
@@ -21,6 +24,21 @@ Diagonal matrix containing the degree of edges (number of conections) for each n
 For example, Small Graph would have the following D matrix associated:
 
 $D_{W}=\begin{bmatrix}2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\0 & 3 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\0 & 0 & 2 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 3 & 0 & 0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 3 & 0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0 & 2 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0 & 0 & 4 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0 & 0 & 0 & 2 & 0 & 0\\0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 3 & 0\\0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 2\\\end{bmatrix}$
+
+This can be thought of as the diagonal matrix of the following vector
+
+$diag(\begin{bmatrix}2&3&2&3&3&2&4&2&3&2\end{bmatrix}^T)$
+
+This can be implemented in matlab using the following code
+
+```matlab
+for i=1:length(W)
+    D(i) = sum(W(i,:));
+end
+D = diag(D');
+```
+
+
 
 **TODO:** show what is WD-1 (becomes colom stochastic  (suma a uno en una de las directions))
 
