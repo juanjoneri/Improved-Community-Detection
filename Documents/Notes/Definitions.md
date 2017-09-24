@@ -110,7 +110,7 @@ $\therefore \Omega = ( \mathbb{I}(1+\frac{\alpha}{1-\alpha})-\frac{\alpha}{1-\al
 
 $\Omega=(\mathbb{I}+\frac{\alpha}{1-\alpha}L)^{-1}$ where $L=\mathbb{I}-WD^{-1}$ is the graph's Laplacian Matrix
 
-#### Show that $ represents a measure of similarity\Omega_{ij}$ 
+#### Show that $ \Omega_{ij}$ represents a measure of similarity 
 
 $\Omega_{ij} = \Omega . [0,0,…,1,0,0,…] = [\omega_{1j},…,\omega_{nj}]$
 
@@ -122,7 +122,7 @@ The above represents the steady state distribution, meaning that $\omega_{ij}$ i
 
 Proof: $ \Omega_{\alpha} = \frac{1}{1- \alpha}((1-\alpha)I +/alpha I- \alpha WD^{-1})^{-1} = = \frac{\alpha}{1-\alpha}L  $ 
 
-###### Proving $\Omega$ is positive definite:
+#### Show $\Omega$ is positive definite:
 
 To prove monoticity of our algorithm, we need to be using a matrix that is *positive definite* (all *eigen values* are positive). 
 
