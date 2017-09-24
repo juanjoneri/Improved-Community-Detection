@@ -21,7 +21,7 @@ $W=\begin{bmatrix}0 & 1 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\1 & 0 & 1 & 1 & 0 & 0 &
 
 Diagonal matrix containing the degree of edges (number of conections) for each node in a sparce matrix $W.$  
 
-For example, Small Graph would have the following D matrix associated:
+For example, *Small Graph* would have the following D matrix associated:
 
 $D_{W}=\begin{bmatrix}2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\0 & 3 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\0 & 0 & 2 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 3 & 0 & 0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 3 & 0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0 & 2 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0 & 0 & 4 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0 & 0 & 0 & 2 & 0 & 0\\0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 3 & 0\\0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 2\\\end{bmatrix}$
 
@@ -40,17 +40,31 @@ D = diag(D');
 
 
 
-**TODO:** show what is WD-1 (becomes colom stochastic  (suma a uno en una de las directions))
+Note that $W\times D^{-1}$ is column stochastic since the definition of D makes it so that each individual column will add up to 1. This means that in a matrix product, $(W\times D^{-1})\times\vec{v}$ the vector $\vec{v}$ will keep this property
+
+For this matrix, $W\times D^{-1}$ would look like the following:
+
+$W\times D^{-1}=\begin{bmatrix}0&0.3333&0.5000& 0& 0& 0& 0& 0& 0& 0\\0.5000& 0&0.5000&0.3333& 0& 0& 0& 0& 0& 0\\0.5000&0.3333& 0& 0& 0& 0& 0& 0& 0& 0\\0&0.3333& 0& 0&0.3333& 0&0.2500& 0& 0& 0\\0& 0& 0&0.3333& 0&0.5000&0.2500& 0& 0& 0\\0& 0& 0& 0&0.3333& 0&0.2500& 0& 0& 0\\0& 0& 0&0.3333&0.3333&0.5000& 0& 0&0.3333& 0\\0& 0& 0& 0& 0& 0& 0& 0&0.3333&0.5000\\0& 0& 0& 0& 0& 0&0.2500&0.5000& 0&0.5000\\0& 0& 0& 0& 0& 0& 0&0.5000&0.3333& 0\end{bmatrix}$
+
+And if we multiply by the vector (which is stochastic)
+
+$\vec{v}=\begin{bmatrix}0.1000\\0.1000\\0.1000\\0.1000\\0.1000\\0.1000\\0.1000\\0.1000\\0.1000\\0.1000\end{bmatrix}$
+
+We get the following vector which is also stochastic
+
+$(W\times D^{-1})\ \vec{v}=\begin{bmatrix}0.0833\\0.1333\\0.0833\\0.0917\\0.1083\\0.0583\\0.1500\\0.0833\\0.1250\\0.0833\end{bmatrix}$
+
+
 
 ---
 
 ## $F$
 
-Matrix representing a partition of the graph with n nodes into g groups. Has dimension $n \times g​$. For small graph, an example of partition F would be
+Matrix representing a partition of the graph with n nodes into g groups. Has dimension $F_{(n \times g)}$. For *small graph*, an example of partition F would be
 
 $F_{W}=\begin{bmatrix}1&0&0\\1&0&0\\1&0&0\\0&1&0\\0&1&0\\0&1&0\\0&1&0\\0&0&1\\0&0&1\\0&0&1\end{bmatrix}$
 
-Which would represent the following partition:
+Which would represent the following partition of W:
 
 ![Small_Graph_Partition](http://www.juanjoneri.com/img/RSCH/Small_Graph_Partition.png)
 
