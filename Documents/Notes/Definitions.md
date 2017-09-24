@@ -175,34 +175,27 @@ after $\infty$ steps *(150)*, $u$ would look like follows:
 
 $u^{\infty}=\begin{bmatrix}0.0769&0.1154&0.0769&0.1154&0.1154&0.0769&0.1538&0.0769&0.1154&0.0769\end{bmatrix}$
 
+This same result can be obtained running the following MATLAB code *(note that since u converges it does not matter what the original definition of u is as long as it is column stochastic)*
+
+```matlab
+// W and D as defined above
+u = ones(10,1)./10;
+
+for i = 1:150
+    u = (W*D^(-1))*u;
+end
+u
+```
+
 Because in each step, $u$ was multiplied by $(W\times D^{-1})$ which is column sctchastic, we have $u^{\infty}$ also column stochastic, meaning that it is well defined as aprobability vector.
 
-When defined in this way, the steady state of the process can be obtained by the following relationship on the degree vector $d​$ defined in [$D​$ section](## $D$)
+When defined in this way, the steady state of the process can be obtained by the following relationship on the degree vector $d$ defined in [$D$ section](## $D$)
 
 $u^{\infty}=\frac{d}{|d|}$ where $|D|= \sum{d_i}$
 
 In general such a process can be applied to any subset $A$ of the graph. In such case, the vector $u$ would define the indicator function A normalized to be column stochastic as follows:
 
 $u=\frac{\mathbb{I}_A}{|A|}$
-
-
-
-### Example
-
-For our Small Graph, p would look like the following after 500 steps of the following code:
-
-```matlab
-// W and D as defined above
-p = ones(10,1)./10;
-
-graphPlot(W);
-for i = 1:150
-    p = W*(Dm*p);
-end
-p
-```
-
-$\vec{p}^{\infty}=\begin{bmatrix}0.0769\\0.1154\\0.0769\\0.1154\\0.1154\\0.0769\\    0.1538\\0.0769\\0.1154\\0.0769\end{bmatrix}$
 
 #### Derivation
 
