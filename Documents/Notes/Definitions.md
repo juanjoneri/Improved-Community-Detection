@@ -66,6 +66,8 @@ Which would represent the following partition of W:
 
 ![Small_Graph_Partition](http://www.juanjoneri.com/img/RSCH/Small_Graph_Partition.png)
 
+We will call each of the columns of F an **indicator function** of the subset. And we will designate the vector as $\mathbb{I}_A$ where $A$ is the subset of the nodes of interest. 
+
 ---
 
 ## $W_{Smooth} ,\Omega$
@@ -74,13 +76,13 @@ Is also a similarity matrix (adjacency matrix) for the graph $W$. However $\Omeg
 
 $u^{k+1}=(W\times D^{-1})\ u^k$
 
-Where $u$ is a probability vector *(column stochastic)* representing the "location" of a random walker wandering in the graph at timestep k.
+Where $u​$ is a probability vector *(column stochastic)* representing the "location" of a random walker wandering in the graph at timestep k.
 
 For example, if $u^{(0)}=\begin{bmatrix}0&0&0&0&1&0&0&0&0&0\end{bmatrix}$ after one step, the position of the random walker would be the following:
 
 $u^{1}=(W\times D^{-1})\ u^0=\begin{bmatrix}0&0&0&1/3&0&1/3&1/3&0&0&0\end{bmatrix}^{T}$
 
-after $\infty$ steps (150), u would look like follows:
+after $\infty$ steps *(150)*, $u$ would look like follows:
 
 $u^{\infty}=\begin{bmatrix}0.0769&0.1154&0.0769&0.1154&0.1154&0.0769&0.1538&0.0769&0.1154&0.0769\end{bmatrix}$
 
@@ -90,7 +92,7 @@ When defined in this way, the steady state of the process can be obtained by the
 
 $u^{\infty}=\frac{d}{\sum{d_i}}$
 
-*Is*  a full matrix that contains a **measure of similarity** between some starting node $W_{i,j}​$ and every other node in $W​$. Can be interpreted as the probability of a random walker ending at each of the points from some starting point $W_{i,j}​$. Hence,$\omega_{ij} = P_{A=\{j\}}(i)​$ (in this case we pick our subset $A​$ to be just one node $\{j\}​$).
+In general such a process can be applied to any subset $A$ of the graph and $\omega_{ij} = P_{A=\{j\}}(i)$ (in this case we pick our subset $A$ to be just one node $\{j\}$).
 
 $\Omega=Id+(\frac{\alpha}{1-\alpha}L)^{-1}$
 
@@ -153,15 +155,35 @@ Recall we want the energy $E$ to be convex, which looks like …. ADD
 
 ---
 
-## $\vec{p}$
+## $\vec{u}$ or $\vec{p}$
 
-$\vec{p}​$ is a vector representing the probability for the random walker to be at each node. Hence, $\vec{p^{k+1}}​$ tells us the probability of where this random walker will be next, based on:
+$\vec{u}$ is a vector representing the probability *(column stochastic)* for the random walker to be at each node. Hence, $\vec{u^{k+1}}$ tells us the probability of where this random walker will be next, based on:
 
 - were it was before ($\vec{p^k}$)
 - the definition of the graph ($W$)
-- the links that each node has ($D$):
+- the links that each node has ($D$)
 
-$p^{k +1} = WD^{-1}p^k$
+For a complete random process, the definition of the Markov chain would be the following:
+
+$u^{k+1}=(W\times D^{-1})\ u^k$
+
+For example, if $u^{(0)}=\begin{bmatrix}0&0&0&0&1&0&0&0&0&0\end{bmatrix}$ (Meaning that the random walker is located in node 5 of Small Graph) after one step, the position distribution would be the following:
+
+$u^{1}=(W\times D^{-1})\ u^0=\begin{bmatrix}0&0&0&1/3&0&1/3&1/3&0&0&0\end{bmatrix}^{T}$
+
+after $\infty$ steps *(150)*, $u$ would look like follows:
+
+$u^{\infty}=\begin{bmatrix}0.0769&0.1154&0.0769&0.1154&0.1154&0.0769&0.1538&0.0769&0.1154&0.0769\end{bmatrix}$
+
+Because in each step, $u$ was multiplied by $(W\times D^{-1})$ which is column sctchastic, we have $u^{\infty}$ also column stochastic, meaning that it is well defined as aprobability vector.
+
+When defined in this way, the steady state of the process can be obtained by the following relationship on the degree vector $d​$ defined in [$D​$ section](## $D$)
+
+$u^{\infty}=\frac{d}{|d|}$ where $|D|= \sum{d_i}$
+
+In general such a process can be applied to any subset $A$ of the graph. In such case, the vector $u$ would define the indicator function A normalized to be column stochastic as follows:
+
+$u=\frac{\mathbb{I}_A}{|A|}$
 
 
 
