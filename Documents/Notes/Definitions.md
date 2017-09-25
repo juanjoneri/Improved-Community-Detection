@@ -72,21 +72,24 @@ We will call each of the columns of F an **indicator function** of the subset. A
 
 ## $W_{Smooth} ,\Omega$
 
-Is also a similarity matrix (adjacency matrix) for the graph $W$. However $\Omega$ is a full matrix obtained by looking at the steady state *(limiting probability distribution)* of the following Discrete-time Markov chain:
+Is also a similarity matrix (adjacency matrix) for the graph $W$. However $\Omega$ is a full matrix obtained by looking at the steady state *(limiting probability distribution)* of the following Discrete-time Markov chain (not quite):
 
 $u^{k+1}=\alpha\ (W\times D^{-1})\ u^k+(1-\alpha)\ (\frac{\mathbb{I}_A}{|A|})$
 
-With $u^{(0)}=\frac{\mathbb{I}_A}{|A|}$ meaning that the random walker is located inside subset $A$
+- $u^{(0)}=\frac{\mathbb{I}_A}{|A|}​$ meaning that the random walker is located inside subset $A​$
+- $\alpha\in[0,1]$
 
 This process represents a convex combination of two processes:
 
-1. $ \alpha\ (W\times D^{-1})\ u^k$ the random walker visits one of its neghouring nodes with probability $\alpha$
+1. $ \alpha\ (W\times D^{-1})\ u^k$ the random walker visits one of its neghouring nodes with probability $\alpha$ *(as shown in u or p)*
 2. $(1-\alpha)\ (\frac{\mathbb{I}_A}{|A|})$ the random walker gets *teletransported* back to its original position in subset A
 
 This means that:
 
 - $\alpha = 0 \implies$ Walker stays confined to the original set
 - $\alpha = 1 \implies$ Get a uniform distribution *(see definition of $u$)*
+
+Because both parts of the process represent probability distributions (in particular $\frac{\mathbb{I}_A}{|A|}$ is column stochastic by definition as noted in $\vec{u}$ or $\vec{p}$ section and $(W\times D^{-1})\ u^k$ is also column stochastic as shown in $D$ section), its convex combination represents a probability distribution too.
 
 When we look at the steady state of this Markov chain we obtain the following relationship:
 
@@ -108,21 +111,27 @@ $\therefore \Omega = ( \mathbb{I}\frac{1-\alpha+\alpha}{1-\alpha}-\frac{\alpha}{
 
 $\therefore \Omega = ( \mathbb{I}(1+\frac{\alpha}{1-\alpha})-\frac{\alpha}{1-\alpha} (W \times D^{-1}))^{-1} $
 
-$\Omega=(\mathbb{I}+\frac{\alpha}{1-\alpha}L)^{-1}$ where $L=\mathbb{I}-WD^{-1}$ is the graph's Laplacian Matrix
+$\Omega=(\mathbb{I}+\frac{\alpha}{1-\alpha}L)^{-1}$ where $L=\mathbb{I}-WD^{-1}$ is the graph's **Laplacian Matrix**
 
-#### Show that $ \Omega_{ij}$ represents a measure of similarity 
+#### Show that $ \Omega_{ij}$ makes sense as measure of similarity 
 
-$\Omega_{ij} = \Omega . [0,0,…,1,0,0,…] = [\omega_{1j},…,\omega_{nj}]$
+**Reescribir**
 
-The above represents the steady state distribution, meaning that $\omega_{ij}$ is a valid notion of similarity because it turns to be the probability of a random walk to be in a specific node. **TODO EXPAND ON THIS AND ASK FOR HELP: WHY IS THIS NOTION OF W A VALID NOTION FOR SIMILARITY?: DONE!! SEE BELLOW AND MAKE IT PRETTY** 
+Take $A = \{j\}$ and Redo reasoning from before **(#)** 
 
+$$p^{\infty}(i) = P_\{j\}(i)$$ probability to be on $i$ if the stochastic process teletransport to $j$ .
 
+So this gives us a similarity between the two vertex because if they are closs together then it has a high value, and if they are far away the probability is low for $j$  to get to $i$ (because it get traped going back to $j$ or near $j$ all the time).
 
-*Claim:* $ \Omega_{\alpha} =( \frac{1}{1- \alpha}(I - \alpha WD^{-1}))^{-1} )^{-1}= \frac{\alpha}{1-\alpha}L$ 
+Now that we have a measure of similarity we have the following claim:
 
-Proof: $ \Omega_{\alpha} = \frac{1}{1- \alpha}((1-\alpha)I +/alpha I- \alpha WD^{-1})^{-1} = = \frac{\alpha}{1-\alpha}L  $ 
+*Claim:* $p^{\infty}_{\{j\}}(i) = \Omega_{ij} = \omega_{ij} $ 
+
+*Proof:* $p_{i}^{\infty} = \Omega^{-1} . [0,0…1,…] $(1 in position j because in this case our set is only one point ). So then this just is the same as $\Omega_{ij}$. (multiplying a matrix by a vector with only one 1 in a row returns that row in the matrix).
 
 #### Show $\Omega$ is positive definite:
+
+**Reescribir**
 
 To prove monoticity of our algorithm, we need to be using a matrix that is *positive definite* (all *eigen values* are positive). 
 
@@ -168,7 +177,15 @@ $\vec{u}$ is a vector representing the probability *(column stochastic)* for the
 - the definition of the graph ($W$)
 - the links that each node has ($D$)
 
-For a complete random process, the definition of the Markov chain would be the following:
+**Proof**
+
+$P(X ^{k+1}=i) = \sum_j P(X^{k}=j)P(X^k = j)$
+
+$p^{k+1}(i) = \sum_j p^k(j) \frac{w_{ij}}{d_j}$
+
+$p_i^{k+1} = \sum_j \frac{w_{ij}}{d_j}p_j^k = WD^{-1}p^k$
+
+Therefore, for a complete random process, the definition of the Markov chain would be the following:
 
 $u^{k+1}=(W\times D^{-1})\ u^k$
 
@@ -196,56 +213,8 @@ Because in each step, $u$ was multiplied by $(W\times D^{-1})$ which is column s
 
 When defined in this way, the steady state of the process can be obtained by the following relationship on the degree vector $d$ defined in [$D$ section](## $D$)
 
-$u^{\infty}=\frac{d}{|d|}$ where $|D|= \sum{d_i}$
+$u^{\infty}=\frac{d}{|d|}$ where $|d|= \sum{d_i}$
 
 In general such a process can be applied to any subset $A$ of the graph. In such case, the vector $u$ would define the indicator function A normalized to be column stochastic as follows:
 
 $u=\frac{\mathbb{I}_A}{|A|}$
-
-#### Derivation
-
-$P(X ^{k+1}=i) = \sum_j P(X^{k}=j)P(X^k = j)$
-
-$p^{k+1}(i) = \sum_j p^k(j) \frac{w_{ij}}{d_j}$
-
-$p_i^{k+1} = \sum_j \frac{w_{ij}}{d_j}p_j^k = WD^{-1}p^k$
-
-Now we define a *"stochastic process"* such that: $p^{k+1} = \alpha W D^{-1}p^k + (1-\alpha) \frac{\mathbb{I}_A}{|A|}$ (Where A is a subset of the whole set, $\mathbb{I}_A$ is the indicator function (meaning it has 1 on points that belong on set A and 0 on the others, and $|A|$ size)
-
-Note: $WD^{-1}p^k$ is a probability vector and so is $\frac{\mathbb{I}_A}{|A|}$ so adding these two still give a probability vector
-
-Say $\alpha = 0.8$, then this means 80$\%$ chance to go to a near vertex and 20 $\%$ chance to transporting to set A.
-
-###### Why do we do this?
-
-If we start with any distribution that is proportional to the degree of vertex and wait to infinity, the chances for the walker to be in a certain point is uniform across the graph.
-
-But note now that with the modification (adding the $+(1-\alpha)$ etc) now there is a higher chance that we bring it to the set A, creating then a "bump" in this set. ( The reason for this is that a walker can only move to its neighbors so once it goes into the set A it is harder to get out of it). 
-
-Now, we want to determine the steady state of this stochastic process,:
-
-Heat bump: $p^{\Omega^{\alpha}} | _A = lim_{k \to \infty} p^k$ $\to$ Limiting distribution 
-
-$$Ip^{\infty} = \alpha W D^{-1} p^{\infty} + (1-\alpha) \frac{\mathbb{I}_A}{|A|} $$
-$$(I - \alpha W D^{-1}) p^{\infty} = (1-\alpha) \frac{\mathbb{I}_A}{|A|} $$ **(#)**
-$$\frac{1}{1-\alpha} (I-\alpha WD^{-1}) p^{\infty} =\frac{\mathbb{I}_A}{|A|}$$
-$$p^{\infty} = \Omega_\alpha ^{-1} \frac{\mathbb{I}_A}{|A|} = p^{\Omega ^ {\alpha}}|_A$$
-Where
-$$ \Omega_{\alpha} = \frac{1}{1- \alpha}(I - \alpha WD^{-1})$$
-considered to be $W_{smooth}$.
-
-Note: it is important to note that in practice we *cannot* compute this $\Omega$ since it is a full matrix. Instead, we compute $p^{\infty}$ by doing the equation shown before and iterating until convergence (maybe 30 times). Again, we do not have acces to $\Omega$ but we can have access to $\Omega.  \frac{\mathbb{I}_A}{|A|} $
-
-###### So now, why can we think of this $\Omega_{ij}$ a measure of similarity between vertex $i$ and $j$?
-
-Take $A = \{j\}$ and Redo reasoning from before **(#)** 
-
-$$p^{\infty}(i) = P_\{j\}(i)$$ probability to be on $i$ if the stochastic process teletransport to $j$ .
-
-So this gives us a similarity between the two vertex because if they are closs together then it has a high value, and if they are far away the probability is low for $j$  to get to $i$ (because it get traped going back to $j$ or near $j$ all the time).
-
-Now that we have a measure of similarity we have the following claim:
-
-*Claim:* $p^{\infty}_{\{j\}}(i) = \Omega_{ij} = \omega_{ij} $ 
-
-*Proof:* $p_{i}^{\infty} = \Omega^{-1} . [0,0…1,…] $(1 in position j because in this case our set is only one point ). So then this just is the same as $\Omega_{ij}$. (multiplying a matrix by a vector with only one 1 in a row returns that row in the matrix).
