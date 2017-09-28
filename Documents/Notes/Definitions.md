@@ -161,11 +161,64 @@ $$\frac{1}{\lambda} = A^{-1}x$$
 
 
 
+------
+
+## $Cut$
+
+**Lemma:**
+
+Let $Assoc(A_r)=\sum_{i \in A} \sum_{j \in A} w_{ij}$ and $Cut(A,A^{\subset})=\sum_{i \in A}\sum_{j \in A^{\subset}}w_{ij}$ then:
+
+$max \sum_{r=1}^{R}Assoc(Ar)$
+
+over all partition $(A_{1},...A_{r})​$ of V is equivalent to
+
+$min \sum_{r=1}^{R}Cut(A_{r},A^{\subset}_{r})$
+
+**Proof:**
+Let  $E(A_{1},...,A_{r})=\sum_{r=1}^{R}Assoc(Ar)$
+$=\sum_{r}\sum_{i \in A_{r}} w_{ij} $
+$= \sum_{r}\sum_{i \in A_{r}}(\sum_{j \in V}w_{ij} -\sum_{j \in A^{\subset}_{r}}) $
+$=\sum_{r}\sum_{i \in A_{r}}\sum_{j \in V} w_{ij}-\sum_{r}\sum_{i \in A_{r}}\sum_{j \in A^{\subset}_{r}}w_{ij} $
+$=(\sum_{i \in V}\sum_{j \in V} w_{ij})-\sum_{r}Cut(A_{r},A^{\subset}_{r} w_{ij}) $
+$=\sum_{i \in V} d_{i} - \sum_{r} Cut(A_{r},A^{\subset}_{r}) $
+
+
+------
+
+## Formulation of the Optimization Problem
+
+![Screen Shot 2017-09-27 at 5.45.52 PM](/Users/ndibbern/Desktop/Screen Shot 2017-09-27 at 5.45.52 PM.png)
+
+
+
 ---
 
 ## $E$
 
-**TODO**
+We define energy as: $E(f_1 , …, f_r) = \sum^R_{r=1} f_r^T \Omega f_r$
+
+**TODO:** show E is convex if omega is pos definite! (because it is a sum of quadratic!)
+
+Using the fact that E is convex we can derive a monotonic algorithm
+
+**TODO:** show why it is monotonic if it is convex
+
+**Algorithm:**
+
+Given the fact $F^k \in C$ we use a greedy algorithm with complexity $O(n)$ to construct a new partition $F^{k+1}$ such that:
+
+$$(F^{k+1}-F^k) . \Delta E(F^k)>0$$
+
+By definition of convexity: 
+
+$$E(F^{k+1}) \geq E(F^k)+ \Delta E(F^k).(F^{k+1}-F^k)$$
+
+$\Delta E(F^k).(F^{k+1}-F^k)>0$ then $E(F^{k+1})>E(R^k)$
+
+ ![Screen Shot 2017-09-27 at 5.43.39 PM](/Users/ndibbern/Desktop/Screen Shot 2017-09-27 at 5.43.39 PM.png)
+
+![Screen Shot 2017-09-27 at 5.43.58 PM](/Users/ndibbern/Desktop/Screen Shot 2017-09-27 at 5.43.58 PM.png)
 
 ---
 
