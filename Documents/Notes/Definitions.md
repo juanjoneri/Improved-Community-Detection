@@ -38,11 +38,13 @@ end
 D = diag(D');
 ```
 
-Note that $W\times D^{-1}$ is column stochastic since the definition of D makes it so that each individual column will add up to 1. This means that in a matrix product, $(W\times D^{-1})\times\vec{v}$ the vector $\vec{v}$ will keep this property (of being a stochastic row vector)
+**TODO: look up what $D^{-1/2}WD^{-1/2}$**
 
-For this matrix, $W\times D^{-1}$ would look like the following:
+Note that $W D^{-1}$ is column stochastic since the definition of D makes it so that each individual column will add up to 1. This means that in a matrix product, $(W D^{-1})\vec{v}$ the vector $\vec{v}$ will keep this property (of being a stochastic row vector)
 
-$W\times D^{-1}=\begin{bmatrix}0&0.3333&0.5000& 0& 0& 0& 0& 0& 0& 0\\0.5000& 0&0.5000&0.3333& 0& 0& 0& 0& 0& 0\\0.5000&0.3333& 0& 0& 0& 0& 0& 0& 0& 0\\0&0.3333& 0& 0&0.3333& 0&0.2500& 0& 0& 0\\0& 0& 0&0.3333& 0&0.5000&0.2500& 0& 0& 0\\0& 0& 0& 0&0.3333& 0&0.2500& 0& 0& 0\\0& 0& 0&0.3333&0.3333&0.5000& 0& 0&0.3333& 0\\0& 0& 0& 0& 0& 0& 0& 0&0.3333&0.5000\\0& 0& 0& 0& 0& 0&0.2500&0.5000& 0&0.5000\\0& 0& 0& 0& 0& 0& 0&0.5000&0.3333& 0\end{bmatrix}$
+For this matrix, $W D^{-1}$ would look like the following:
+
+$W D^{-1}=\begin{bmatrix}0&0.3333&0.5000& 0& 0& 0& 0& 0& 0& 0\\0.5000& 0&0.5000&0.3333& 0& 0& 0& 0& 0& 0\\0.5000&0.3333& 0& 0& 0& 0& 0& 0& 0& 0\\0&0.3333& 0& 0&0.3333& 0&0.2500& 0& 0& 0\\0& 0& 0&0.3333& 0&0.5000&0.2500& 0& 0& 0\\0& 0& 0& 0&0.3333& 0&0.2500& 0& 0& 0\\0& 0& 0&0.3333&0.3333&0.5000& 0& 0&0.3333& 0\\0& 0& 0& 0& 0& 0& 0& 0&0.3333&0.5000\\0& 0& 0& 0& 0& 0&0.2500&0.5000& 0&0.5000\\0& 0& 0& 0& 0& 0& 0&0.5000&0.3333& 0\end{bmatrix}$
 
 And if we multiply by the vector (which is stochastic)
 
@@ -50,7 +52,7 @@ $\vec{v}=\begin{bmatrix}0.1000\\0.1000\\0.1000\\0.1000\\0.1000\\0.1000\\0.1000\\
 
 We get the following vector which is also stochastic
 
-$(W\times D^{-1})\ \vec{v}=\begin{bmatrix}0.0833\\0.1333\\0.0833\\0.0917\\0.1083\\0.0583\\0.1500\\0.0833\\0.1250\\0.0833\end{bmatrix}$
+$(W D^{-1})\ \vec{v}=\begin{bmatrix}0.0833\\0.1333\\0.0833\\0.0917\\0.1083\\0.0583\\0.1500\\0.0833\\0.1250\\0.0833\end{bmatrix}$
 
 
 
@@ -58,9 +60,9 @@ $(W\times D^{-1})\ \vec{v}=\begin{bmatrix}0.0833\\0.1333\\0.0833\\0.0917\\0.1083
 
 ## $F$
 
-Matrix representing a partition of the graph with n nodes into g groups. Has dimension $F_{(n \times g)}$. For *small graph*, an example of partition F would be
+Matrix representing a partition of the graph with n nodes into g groups. Has dimension $F_{(n   g)}$. For *small graph*, an example of partition F would be
 
-$F_{W}=\begin{bmatrix}1&0&0\\1&0&0\\1&0&0\\0&1&0\\0&1&0\\0&1&0\\0&1&0\\0&0&1\\0&0&1\\0&0&1\end{bmatrix}$
+$F_{W}=\begin{bmatrix}1&0&0\\1&0&0\\1&0&0\\0&1&0\\0&1&0\\0&1&0\\0&1&0\\0&0&1\\0&0&1\\0&0&1\end{bmatrix}​$
 
 Which would represent the following partition of W:
 
@@ -72,16 +74,16 @@ We will call each of the columns of F an **indicator function** of the subset. A
 
 ## $W_{Smooth} ,\Omega$
 
-Is also a similarity matrix (adjacency matrix) for the graph $W$. However $\Omega$ is a full matrix obtained by looking at the steady state *(limiting probability distribution)* of the following Discrete-time Markov chain (not quite):
+Is also a similarity matrix (adjacency matrix) for the graph $W$. However $\Omega$ is a dense matrix obtained by looking at the steady state *(limiting probability distribution)* of the following Discrete-time Markov chain (really just a stochastic proces)
 
-$u^{k+1}=\alpha\ (W\times D^{-1})\ u^k+(1-\alpha)\ (\frac{\mathbb{I}_A}{|A|})$
+$u^{k+1}=\alpha\ (W D^{-1})\ u^k+(1-\alpha)\ (\frac{\mathbb{I}_A}{|A|})$
 
 - $u^{(0)}=\frac{\mathbb{I}_A}{|A|}​$ meaning that the random walker is located inside subset $A​$
 - $\alpha\in[0,1]$
 
 This process represents a convex combination of two processes:
 
-1. $ \alpha\ (W\times D^{-1})\ u^k$ the random walker visits one of its neghouring nodes with probability $\alpha$ *(as shown in u or p)*
+1. $ \alpha\ (W D^{-1})\ u^k$ the random walker visits one of its neghouring nodes with probability $\alpha$ *(as shown in u or p)*
 2. $(1-\alpha)\ (\frac{\mathbb{I}_A}{|A|})$ the random walker gets *teletransported* back to its original position in subset A
 
 This means that:
@@ -89,27 +91,27 @@ This means that:
 - $\alpha = 0 \implies$ Walker stays confined to the original set
 - $\alpha = 1 \implies$ Get a uniform distribution *(see definition of $u$)*
 
-Because both parts of the process represent probability distributions (in particular $\frac{\mathbb{I}_A}{|A|}$ is column stochastic by definition as noted in $\vec{u}$ or $\vec{p}$ section and $(W\times D^{-1})\ u^k$ is also column stochastic as shown in $D$ section), its convex combination represents a probability distribution too.
+Because both parts of the process represent probability distributions (in particular $\frac{\mathbb{I}_A}{|A|}$ is column stochastic by definition as noted in $\vec{u}$ or $\vec{p}$ section and $(W  D^{-1})\ u^k$ is also column stochastic as shown in $D$ section), its convex combination represents a probability distribution too.
 
 When we look at the steady state of this Markov chain we obtain the following relationship:
 
-$u^{\infty}=\alpha\ (W\times D^{-1})\ u^\infty+(1-\alpha)\ (\frac{\mathbb{I}_A}{|A|})$
+$u^{\infty}=\alpha\ (W D^{-1})\ u^\infty+(1-\alpha)\ (\frac{\mathbb{I}_A}{|A|})$
 
-$\therefore u^{\infty}(\mathbb{I}-\alpha\ (W\times D^{-1}))=(1-\alpha)\ (\frac{\mathbb{I}_A}{|A|})$
+$\therefore (\mathbb{I}-\alpha\ (W D^{-1}))u^{\infty}=(1-\alpha)\ (\frac{\mathbb{I}_A}{|A|})$
 
-$\therefore u^{\infty}\frac{1}{(1-\alpha)}(\mathbb{I}-\alpha\ (W\times D^{-1}))=\frac{\mathbb{I}_A}{|A|}$
+$\therefore\frac{1}{(1-\alpha)}(\mathbb{I}-\alpha\ (W D^{-1})) u^{\infty}=\frac{\mathbb{I}_A}{|A|}$
 
-$\therefore u^{\infty}=\frac{\mathbb{I}_A}{|A|}\times(\frac{\mathbb{I}-\alpha\ (W\times D^{-1})}{1-\alpha})^{-1}$
+$\therefore u^{\infty}=(\frac{\mathbb{I}-\alpha\ (W D^{-1})}{1-\alpha})^{-1}\frac{\mathbb{I}_A}{|A|}$
 
 We will define $\Omega$ to be the term in the right:
 
-$\Omega=(\frac{\mathbb{I}-\alpha\ (W\times D^{-1})}{1-\alpha})^{-1}$
+$\Omega=(\frac{\mathbb{I}-\alpha\ (W  D^{-1})}{1-\alpha})^{-1}$
 
-$\therefore \Omega = ( \frac{\mathbb{I}}{1-\alpha}-\frac{\alpha}{1-\alpha} (W \times D^{-1}))^{-1} $
+$\therefore \Omega = ( \frac{\mathbb{I}}{1-\alpha}-\frac{\alpha}{1-\alpha} (W   D^{-1}))^{-1} $
 
-$\therefore \Omega = ( \mathbb{I}\frac{1-\alpha+\alpha}{1-\alpha}-\frac{\alpha}{1-\alpha} (W \times D^{-1}))^{-1} $
+$\therefore \Omega = ( \mathbb{I}\frac{1-\alpha+\alpha}{1-\alpha}-\frac{\alpha}{1-\alpha} (W   D^{-1}))^{-1} $
 
-$\therefore \Omega = ( \mathbb{I}(1+\frac{\alpha}{1-\alpha})-\frac{\alpha}{1-\alpha} (W \times D^{-1}))^{-1} $
+$\therefore \Omega = ( \mathbb{I}(1+\frac{\alpha}{1-\alpha})-\frac{\alpha}{1-\alpha} (W   D^{-1}))^{-1} $
 
 $\Omega=(\mathbb{I}+\frac{\alpha}{1-\alpha}L)^{-1}$ where $L=\mathbb{I}-WD^{-1}$ is the graph's **Laplacian Matrix**
 
@@ -183,7 +185,6 @@ $=\sum_{r}\sum_{i \in A_{r}}\sum_{j \in V} w_{ij}-\sum_{r}\sum_{i \in A_{r}}\sum
 $=(\sum_{i \in V}\sum_{j \in V} w_{ij})-\sum_{r}Cut(A_{r},A^{\subset}_{r} w_{ij}) $
 $=\sum_{i \in V} d_{i} - \sum_{r} Cut(A_{r},A^{\subset}_{r}) $
 
-
 ------
 
 ## Formulation of the Optimization Problem
@@ -200,6 +201,8 @@ We define energy as: $E(f_1 , …, f_r) = \sum^R_{r=1} f_r^T \Omega f_r$
 
 **TODO:** show E is convex if omega is pos definite! (because it is a sum of quadratic!)
 
+and sum of convex is convex
+
 Using the fact that E is convex we can derive a monotonic algorithm
 
 **TODO:** show why it is monotonic if it is convex
@@ -215,6 +218,8 @@ By definition of convexity:
 $$E(F^{k+1}) \geq E(F^k)+ \Delta E(F^k).(F^{k+1}-F^k)$$
 
 $\Delta E(F^k).(F^{k+1}-F^k)>0$ then $E(F^{k+1})>E(R^k)$
+
+**TODO** of E is the u infinity so we do an algorithm taht will guarantee this. (page rank)
 
  ![Screen Shot 2017-09-27 at 5.43.39 PM](/Users/ndibbern/Desktop/Screen Shot 2017-09-27 at 5.43.39 PM.png)
 
@@ -240,11 +245,11 @@ $p_i^{k+1} = \sum_j \frac{w_{ij}}{d_j}p_j^k = WD^{-1}p^k$
 
 Therefore, for a complete random process, the definition of the Markov chain would be the following:
 
-$u^{k+1}=(W\times D^{-1})\ u^k$
+$u^{k+1}=(W  D^{-1})\ u^k$
 
 For example, if $u^{(0)}=\begin{bmatrix}0&0&0&0&1&0&0&0&0&0\end{bmatrix}$ (Meaning that the random walker is located in node 5 of Small Graph) after one step, the position distribution would be the following:
 
-$u^{1}=(W\times D^{-1})\ u^0=\begin{bmatrix}0&0&0&1/3&0&1/3&1/3&0&0&0\end{bmatrix}^{T}$
+$u^{1}=(W  D^{-1})\ u^0=\begin{bmatrix}0&0&0&1/3&0&1/3&1/3&0&0&0\end{bmatrix}^{T}$
 
 after $\infty$ steps *(150)*, $u$ would look like follows:
 
@@ -262,7 +267,7 @@ end
 u
 ```
 
-Because in each step, $u$ was multiplied by $(W\times D^{-1})$ which is column sctchastic, we have $u^{\infty}$ also column stochastic, meaning that it is well defined as aprobability vector.
+Because in each step, $u$ was multiplied by $(W  D^{-1})$ which is column sctchastic, we have $u^{\infty}$ also column stochastic, meaning that it is well defined as aprobability vector.
 
 When defined in this way, the steady state of the process can be obtained by the following relationship on the degree vector $d$ defined in [$D$ section](## $D$)
 
