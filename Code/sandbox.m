@@ -1,4 +1,9 @@
 clear;
+load Data/b.txt;
+load Data/a.txt
+W = adjacency(graph(a, b))
+
+%{
 W = [
      0     1     1     0     0     0     0     0     0     0
      1     0     1     1     0     0     0     0     0     0
@@ -11,7 +16,8 @@ W = [
      0     0     0     0     0     0     1     1     0     1
      0     0     0     0     0     0     0     1     1     0
      ];
- 
+%}
+
 dim = size(W);
 dim = dim(1);
 
