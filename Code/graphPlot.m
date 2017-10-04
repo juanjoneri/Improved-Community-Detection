@@ -2,6 +2,6 @@
 
 % Makes a graph out of an adjacency matrix and plots it.
 
-function p = graphPlot( A )
-    p = plot(graph(A));
+function p = graphPlot( A, w )
+    p = plot(graph(A), 'NodeLabel',w);
 end

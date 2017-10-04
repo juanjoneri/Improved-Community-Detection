@@ -12,20 +12,21 @@ W = [
      0     0     0     0     0     0     0     1     1     0
      ];
  
-graphPlot(W);
+graphPlot(W, linspace(1, 10, 10));
 
 %Degree of the nodes
 for i=1:10
     d(i) = sum(W(i,:));
 end
 D = diag(d');
-Dm = D^(-1);
+Dh = D^(-1/2);
 
 %Original position of random walker
 p = ones(10,1)./10;
 
-graphPlot(W);
 for i = 1:150
-    p = W*(Dm*p);
+    p = (Dh*W*Dh)*p;
 end
 p'
+figure;
+graphPlot(W, p);
