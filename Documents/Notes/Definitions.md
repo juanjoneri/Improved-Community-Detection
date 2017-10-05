@@ -78,7 +78,7 @@ Is also a similarity matrix (adjacency matrix) for the graph $W$. However $\Omeg
 
 $u^{k+1}=\alpha\ (W D^{-1})\ u^k+(1-\alpha)\ (\frac{\mathbb{I}_A}{|A|})$
 
-- $u^{(0)}=\frac{\mathbb{I}_A}{|A|}​$ meaning that the random walker is located inside subset $A​$
+- $u^{(0)}=\frac{\mathbb{I}_A}{|A|}$ meaning that the random walker is located inside subset $A$
 - $\alpha\in[0,1]$
 
 This process represents a convex combination of two processes:
@@ -131,23 +131,76 @@ Now that we have a measure of similarity we have the following claim:
 
 *Proof:* $p_{i}^{\infty} = \Omega^{-1} . [0,0…1,…] $(1 in position j because in this case our set is only one point ). So then this just is the same as $\Omega_{ij}$. (multiplying a matrix by a vector with only one 1 in a row returns that row in the matrix).
 
-#### Show $\Omega$ is positive definite:
 
-**Reescribir**
 
-To prove monoticity of our algorithm, we need to be using a matrix that is *positive definite* (all *eigen values* are positive). 
+------
 
-**Claim:** $\Omega$ is positive definite:
+## $W_{Smooth} ,\Omega$ New definition
+
+Recall that to prove monoticity of our algorithm, we need to be using a matrix that is *positive definite* (all $W_{Smooth} ,\Omega$ that was defined in the previous section is not symetric, and hence we cannot guarantee that it will be positive definite. Because of this reason we look for a new definition of $W_{Smooth} ,\Omega$.
+
+The new definition is also a similarity matrix (adjacency matrix) for the graph $W$. But now lets define the following process:  
+
+$u^{k+1}=\alpha\ (D^{-1/2}WD^{-1/2})\ u^k+(1-\alpha)\ (\frac{\mathbb{I}_A}{|A|})$
+
+- $u^{(0)}=\frac{\mathbb{I}_A}{|A|}$ meaning that the random walker is located inside subset $A$
+- $\alpha\in[0,1]$
+
+This process represents a convex combination of two processes:
+
+1. $ \alpha\ (D^{-1/2}WD^{-1/2})\ u^k$ 
+2. $(1-\alpha)\ (\frac{\mathbb{I}_A}{|A|})$ 
+
+This means that:
+
+- $\alpha = 0 \implies$ 
+- $\alpha = 1 \implies$ 
+
+Because this process now does not represent probability distributions (in particular $\frac{\mathbb{I}_A}{|A|}$ is column stochastic by definition as noted in $\vec{u}$ or $\vec{p}$ section but $(D^{-1/2}WD^{-1/2})u^k$ is not column stochastic as shown in $D$ section), its convex combination does not represent a probability distribution. Instead this process represents a heat equation ? **TODO** 
+
+When we look at the steady state of this process we obtain the following relationship:
+
+$u^{\infty}=\alpha\ (D^{-1/2}WD^{-1/2})\ u^\infty+(1-\alpha)\ (\frac{\mathbb{I}_A}{|A|})$
+
+$\therefore (\mathbb{I}-\alpha\ (D^{-1/2}WD^{-1/2}))u^{\infty}=(1-\alpha)\ (\frac{\mathbb{I}_A}{|A|})$
+
+$\therefore\frac{1}{(1-\alpha)}(\mathbb{I}-\alpha\ (D^{-1/2}WD^{-1/2})) u^{\infty}=\frac{\mathbb{I}_A}{|A|}$
+
+$\therefore u^{\infty}=(\frac{\mathbb{I}-\alpha\ (W D^{-1})}{1-\alpha})^{-1}\frac{\mathbb{I}_A}{|A|}$
+
+We will define $\Omega$ to be the term in the right:
+
+$\Omega=(\frac{\mathbb{I}-\alpha\ (D^{-1/2}WD^{-1/2})}{1-\alpha})^{-1}$
+
+$\therefore \Omega = ( \frac{\mathbb{I}}{1-\alpha}-\frac{\alpha}{1-\alpha} (D^{-1/2}WD^{-1/2}))^{-1} $
+
+$\therefore \Omega = ( \mathbb{I}\frac{1-\alpha+\alpha}{1-\alpha}-\frac{\alpha}{1-\alpha} (D^{-1/2}WD^{-1/2}))^{-1} $
+
+$\therefore \Omega = ( \mathbb{I}(1+\frac{\alpha}{1-\alpha})-\frac{\alpha}{1-\alpha} (D^{-1/2}WD^{-1/2}))^{-1} $
+
+$\Omega=(\mathbb{I}+\frac{\alpha}{1-\alpha}L_\text{sym})^{-1}$ where $L_{\text{sym}}=\mathbb{I}-D^{-1/2}WD^{-1/2}$ is the graph's **Symmetric Laplacian Matrix**
+
+
+
+### Show $\Omega$ is positive definite:
+
+**Claim:**
+
+ $\Omega^{-1}=Id+(\frac{\alpha}{1-\alpha}L)^{-1}$  has eigenvalues of the form $1+\frac{\alpha}{1-\alpha}\lambda$ where $\lambda$ is an eigenvalue of $L$
 
 ##### Proof:
 
-Recall: $\Omega=Id+(\frac{\alpha}{1-\alpha}L)^{-1}$
+Let $\lambda$ be an eigenvalue of $L$ corresponding to the eigenvector $u$
 
-$L $ is positive definite (look at A tutorial on spectral clustering)
+$(Id+\frac{\alpha}{1-\alpha}L)u=u+\frac{\alpha}{1-\alpha}Lu=u+\frac{\alpha}{1-\alpha}\lambda u=(Id+\frac{\alpha}{1-\alpha}\lambda)u$
 
-*Lemma:* if $A$ is positive definite, so is $A^{-1}$
+$\therefore (Id+\frac{\alpha}{1-\alpha}\lambda) $ is an egenvalue of $\Omega^{-1}$ which is positive since $\alpha \in [0, 1)$
 
-*Proof:* 
+**Claim:** 
+
+$A$ has eigenvalue $\lambda \implies$ $A^{-1}$ has eigenvalue $\frac{1}{\lambda}$
+
+**Proof:**
 
 $$Ax = \lambda x$$ 
 
@@ -155,13 +208,17 @@ $$x=\lambda A^{-1}x$$
 
 $$\frac{1}{\lambda} = A^{-1}x$$
 
- *Claim:* If $/lambda$ is the eigen value of L, then $(1+ /frac{\alpha}{1-\alpha} \lambda)$ is an eigenvalue of $\Omega$
+**Claim:**
 
-*Proof:* $u^T \Omega u= <u, \Omega u> = (I + \frac{\alpha}{1-\alpha})$ 
+$\Omega$ is positive definite
 
-**TODO: ANOTAR EL RESTO DE LAS NOTAS DE JUANJO**
+**Proof:**
 
+We have  $\Omega^{-1}$ has positive eigenvalues $\gamma$
 
+$\therefore \Omega$ has eigenvalues $\gamma^{-1}$ also positive
+
+$\therefore \Omega$ positive definite
 
 ------
 
