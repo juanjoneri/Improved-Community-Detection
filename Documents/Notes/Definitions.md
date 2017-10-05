@@ -143,20 +143,9 @@ The new definition is also a similarity matrix (adjacency matrix) for the graph 
 
 $u^{k+1}=\alpha\ (D^{-1/2}WD^{-1/2})\ u^k+(1-\alpha)\ (\frac{\mathbb{I}_A}{|A|})$
 
-- $u^{(0)}=\frac{\mathbb{I}_A}{|A|}$ meaning that the random walker is located inside subset $A$
 - $\alpha\in[0,1]$
 
-This process represents a convex combination of two processes:
-
-1. $ \alpha\ (D^{-1/2}WD^{-1/2})\ u^k$ 
-2. $(1-\alpha)\ (\frac{\mathbb{I}_A}{|A|})$ 
-
-This means that:
-
-- $\alpha = 0 \implies$ 
-- $\alpha = 1 \implies$ 
-
-Because this process now does not represent probability distributions (in particular $\frac{\mathbb{I}_A}{|A|}$ is column stochastic by definition as noted in $\vec{u}$ or $\vec{p}$ section but $(D^{-1/2}WD^{-1/2})u^k$ is not column stochastic as shown in $D$ section), its convex combination does not represent a probability distribution. Instead this process represents a heat equation ? **TODO** 
+Because this process now does not represent probability distributions (in particular $\frac{\mathbb{I}_A}{|A|}$ is column stochastic by definition as noted in $\vec{u}$ or $\vec{p}$ section but $(D^{-1/2}WD^{-1/2})u^k$ is not column stochastic as shown in $D$ section), its convex combination does not represent a probability distribution. Instead this process represents …… 
 
 When we look at the steady state of this process we obtain the following relationship:
 
@@ -166,7 +155,7 @@ $\therefore (\mathbb{I}-\alpha\ (D^{-1/2}WD^{-1/2}))u^{\infty}=(1-\alpha)\ (\fra
 
 $\therefore\frac{1}{(1-\alpha)}(\mathbb{I}-\alpha\ (D^{-1/2}WD^{-1/2})) u^{\infty}=\frac{\mathbb{I}_A}{|A|}$
 
-$\therefore u^{\infty}=(\frac{\mathbb{I}-\alpha\ (W D^{-1})}{1-\alpha})^{-1}\frac{\mathbb{I}_A}{|A|}$
+$\therefore u^{\infty}=(\frac{\mathbb{I}-\alpha\ (D^{-1/2}WD^{-1/2})}{1-\alpha})^{-1}\frac{\mathbb{I}_A}{|A|}$
 
 We will define $\Omega$ to be the term in the right:
 
@@ -184,17 +173,17 @@ $\Omega=(\mathbb{I}+\frac{\alpha}{1-\alpha}L_\text{sym})^{-1}$ where $L_{\text{s
 
 ### Show $\Omega$ is positive definite:
 
-**Claim:**
+​**Claim:**
 
- $\Omega^{-1}=Id+(\frac{\alpha}{1-\alpha}L)^{-1}$  has eigenvalues of the form $1+\frac{\alpha}{1-\alpha}\lambda$ where $\lambda$ is an eigenvalue of $L$
+ $\Omega^{-1}=Id+\frac{\alpha}{1-\alpha}L$  has eigenvalues of the form $1+\frac{\alpha}{1-\alpha}\lambda$ where $\lambda$ is an eigenvalue of $L$
 
 ##### Proof:
 
 Let $\lambda$ be an eigenvalue of $L$ corresponding to the eigenvector $u$
 
-$(Id+\frac{\alpha}{1-\alpha}L)u=u+\frac{\alpha}{1-\alpha}Lu=u+\frac{\alpha}{1-\alpha}\lambda u=(Id+\frac{\alpha}{1-\alpha}\lambda)u$
+$(Id+\frac{\alpha}{1-\alpha}L)u=u+\frac{\alpha}{1-\alpha}Lu=u+\frac{\alpha}{1-\alpha}\lambda u=(1+\frac{\alpha}{1-\alpha}\lambda)u$
 
-$\therefore (Id+\frac{\alpha}{1-\alpha}\lambda) $ is an egenvalue of $\Omega^{-1}$ which is positive since $\alpha \in [0, 1)$
+$\therefore (1+\frac{\alpha}{1-\alpha}\lambda) $ is an egenvalue of $\Omega^{-1}$ which is positive since $\alpha \in [0, 1)$
 
 **Claim:** 
 
@@ -206,7 +195,7 @@ $$Ax = \lambda x$$
 
 $$x=\lambda A^{-1}x$$
 
-$$\frac{1}{\lambda} = A^{-1}x$$
+$$\frac{x}{\lambda} = A^{-1}x$$
 
 **Claim:**
 

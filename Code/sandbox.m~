@@ -36,8 +36,7 @@ for i=1:dim
         d(i-deleted) = s;
     end
     if s > max
-        maxi = i - deleted;
-        max = s;
+        maxi = i - de
     end
 end
 Dh = diag(d.^(-1/2)');
@@ -47,12 +46,12 @@ dim = dim(1)
 
 %Original position of random walker
 p = zeros(dim, 1);
-p(maxi) = 100;
+p(2400) = 100;
 pz = p;
 
-a = 0.99;
+a = 0.8;
 for i = 1:200
     p = a*(Dh*W*Dh)*p + (1-a)*pz;
 end
-p(maxi) = 0;
+p(3000) = 0;
 graphPlot(W, p);
