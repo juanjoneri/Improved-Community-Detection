@@ -145,7 +145,7 @@ $u^{k+1}=\alpha\ (D^{-1/2}WD^{-1/2})\ u^k+(1-\alpha)\ (\frac{\mathbb{I}_A}{|A|})
 
 - $\alpha\in[0,1]$
 
-Because this process now does not represent probability distributions (in particular $\frac{\mathbb{I}_A}{|A|}$ is column stochastic by definition as noted in $\vec{u}$ or $\vec{p}$ section but $(D^{-1/2}WD^{-1/2})u^k$ is not column stochastic as shown in $D$ section), its convex combination does not represent a probability distribution. Instead this process represents …… 
+Because this process now does not represent probability distributions (in particular $\frac{\mathbb{I}_A}{|A|}​$ is column stochastic by definition as noted in $\vec{u}​$ or $\vec{p}​$ section but $(D^{-1/2}WD^{-1/2})u^k​$ is not column stochastic as shown in $D​$ section), its convex combination does not represent a probability distribution. Instead this process represents …… 
 
 When we look at the steady state of this process we obtain the following relationship:
 
@@ -173,7 +173,7 @@ $\Omega=(\mathbb{I}+\frac{\alpha}{1-\alpha}L_\text{sym})^{-1}$ where $L_{\text{s
 
 ### Show $\Omega$ is positive definite:
 
-​**Claim:**
+**Claim:**
 
  $\Omega^{-1}=Id+\frac{\alpha}{1-\alpha}L$  has eigenvalues of the form $1+\frac{\alpha}{1-\alpha}\lambda$ where $\lambda$ is an eigenvalue of $L$
 
