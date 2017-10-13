@@ -1,4 +1,9 @@
-function [ p ] = exploreGraph( W, X, alpha,nb_steps )
+%% exploreGraph
+% Uses the 'random walker - heat equation' propagation stochastic process
+% with hyper param alpha to explore a graph W with coordinates X in nb_seps
+% starting at a random node of the graph
+function [ p ] = exploreGraph( W, X, alpha, nb_steps )
+    % exploreGraph( W, X, 0.999, 100 )
 
     x_coordinates = X(:,1);
     y_coordinates = X(:,2);
