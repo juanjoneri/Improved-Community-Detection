@@ -175,7 +175,7 @@ $\Omega=(\mathbb{I}+\frac{\alpha}{1-\alpha}L_\text{sym})^{-1}$ where $L_{\text{s
 
 ​**Claim:**
 
- $\Omega^{-1}=Id+\frac{\alpha}{1-\alpha}L$  has eigenvalues of the form $1+\frac{\alpha}{1-\alpha}\lambda$ where $\lambda$ is an eigenvalue of $L$
+ $\lambda$ is an eigenvalue of $L$ $\implies$  $1+\frac{\alpha}{1-\alpha}\lambda$  is an eigenvalue of $\Omega^{-1}=Id+\frac{\alpha}{1-\alpha}L$ 
 
 ##### Proof:
 

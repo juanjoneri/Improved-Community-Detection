@@ -1,0 +1,42 @@
+function [ p ] = exploreGraph( W, X, alpha,nb_steps )
+
+    x_coordinates = X(:,1);
+    y_coordinates = X(:,2);
+
+    dim = size(W);
+    dim = dim(1);
+    d = sum(W, 1);
+
+    %Degree of the nodes
+    max = 0;
+    maxi = 1;
+    
+    for i=1:dim
+        s = sum(W(i,:));
+        d(i) = s;
+
+        if s > max
+            % Find node with higher degree to use as init node
+            maxi = i;
+            max = s;
+        end
+    end
+    Dh = diag(d.^(-1/2)');
+
+    %Original position of random walker
+    p = zeros(dim, 1);
+    p(maxi) = 1;
+    pz = p;
+    
+    for i = 1:nb_steps
+        
+        p = alpha*(Dh*W*Dh)*p + (1-alpha)*pz;
+        
+        if mod(i,floor(nb_steps/20)) == 0
+            graphPlotWeightedLocations(x_coordinates, y_coordinates, p);
+            pause
+        end
+    end
+    
+end
+
