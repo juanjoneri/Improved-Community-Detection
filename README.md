@@ -1,6 +1,6 @@
 # A New Algorithm for Community Detection
 
-![](/Documents/Omega_representation_min.png)
+![](/Documents/W_to_Omega.png)
 
 ### Abstract
 
