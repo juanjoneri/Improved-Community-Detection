@@ -12,7 +12,7 @@ Here we are saying that we want an algorithm that guarantees increase of the lin
 
 Convexity implies that the actual energy is above the linearized energy so if you guarantee that the linearized energy increase, then you also guarantee that the actual energy incerases 
 
-The equation describese by how much the linearized energy is going to increase if i move from the current partition to the next partition (it is going to encrease by exactly this quantity) and you want that to be positive.
+The equation describese by how much the linearized energy is going to increase if I move from the current partition to the next partition (it is going to encrease by exactly this quantity) and you want that to be positive.
 
 We implement a greede algorithm which always guarantees that the next partition increases the linearized energy. Because there is an explicit formula, it is not hard to find such an algorith,.
 

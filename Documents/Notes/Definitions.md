@@ -70,6 +70,8 @@ Which would represent the following partition of W:
 
 We will call each of the columns of F an **indicator function** of the subset. And we will designate the vector as $\mathbb{I}_A$ where $A$ is the subset of the nodes of interest. 
 
+We define $f_r$ to be the column $r$ of matrix $F$ a class or as a membership function $\pi(i):\{1 ..n\}\to \{1..R\} $
+
 ---
 
 ## $W_{Smooth} ,\Omega$
@@ -173,6 +175,8 @@ $\Omega=(\mathbb{I}+\frac{\alpha}{1-\alpha}L_\text{sym})^{-1}$ where $L_{\text{s
 
 ### Show $\Omega$ is positive definite:
 
+#### ADD PROOF FOR POS DEF IN PAPER
+
 **Claim:**
 
  $\lambda$ is an eigenvalue of $L$ $\implies$  $1+\frac{\alpha}{1-\alpha}\lambda$  is an eigenvalue of $\Omega^{-1}=Id+\frac{\alpha}{1-\alpha}L$ 
@@ -231,47 +235,136 @@ $=\sum_{r}\sum_{i \in A_{r}}\sum_{j \in V} w_{ij}-\sum_{r}\sum_{i \in A_{r}}\sum
 $=(\sum_{i \in V}\sum_{j \in V} w_{ij})-\sum_{r}Cut(A_{r},A^{\subset}_{r} w_{ij}) $
 $=\sum_{i \in V} d_{i} - \sum_{r} Cut(A_{r},A^{\subset}_{r}) $
 
-------
-
-## Formulation of the Optimization Problem
-
-![Screen Shot 2017-09-27 at 5.45.52 PM](/Users/ndibbern/Desktop/Screen Shot 2017-09-27 at 5.45.52 PM.png)
-
-
-
 ---
 
 ## $E$
 
-We define energy as: $E(f_1 , …, f_r) = \sum^R_{r=1} f_r^T \Omega f_r$
+We define energy as: $E(f_1 , …, f_r) = \sum^R_{r=1} f_r^T W f_r$
 
-**TODO:** show E is convex if omega is pos definite! (because it is a sum of quadratic!)
+However because $W$ is not positive definite, we implement an alternative measure of similarity $\Omega$ and get a new definition of E:
 
-and sum of convex is convex
+$E(f_1 , …, f_r) = \sum^R_{r=1} f_r^T \Omega f_r$ 
 
-Using the fact that E is convex we can derive a monotonic algorithm
+### Theorem: $\nabla E(f_1 , …, f_r) = \Omega f$ and $\nabla^2 E(f_1 , …, f_r) = \Omega $ 
 
-**TODO:** show why it is monotonic if it is convex
+Recall 
 
-**Algorithm:**
+$E(f_1 , …, f_r) = \sum^R_{r=1} f_r^T \Omega f_r$ 
 
-Given the fact $F^k \in C$ we use a greedy algorithm with complexity $O(n)$ to construct a new partition $F^{k+1}$ such that:
+Considering the following statement:
 
-$$(F^{k+1}-F^k) . \Delta E(F^k)>0$$
+$f(x+h) = f(x) +  \left \langle \nabla f(x) , h\right \rangle + O(df^2) $ 
+
+Then if we consider:
+
+$(f+df)^T \Omega (f+df)$
+
+$= f^t \Omega f + df^T \Omega f + f^T \Omega df + df^T \Omega df$
+
+$= f^t \Omega f + 2 \left  \langle  \Omega f, df \right \rangle  + df^T \Omega df$ 
+
+From this we conclude that 
+
+$$\nabla E(f_1 , …, f_r) = \Omega f$$ and $$\nabla ^2 E(f_1 , …, f_r) = \Omega $$ 
+
+### Theorem: $E(f_1 , …, f_r) = \sum^R_{r=1} f_r^T \Omega f_r$ is convex
+
+**Notes**
+
+Then the function is convex $f(x)=x^T A \ x$ 
+
+Then each term in the function, which is a sum is also convex
+
+By the Second-order conditions [convex optimization book]:
+
+Assuming f is twice differentiable, that is, its Hessian at each point in $\text{dom}f$, which is open. Then f is convex if and only if $\text{dom}f$ is convex and its Hessian is positive semidefinite: for all $x \in \text{dom}f$. In our case dom is R^n so we know it is convex.
+
+The other condition follows from the fact that we know that $HE(F^k) = \Omega$
+
+We know $E(F^k) = \sum_i \sum_j \Omega_{ij} F_iF_j$ .. **ADD CON JUANJO**
+
+In our case, our Energy function looks like the following:
+
+$$E(f_1,f_2,…,f_r) = \sum_r f_r^T \Omega f_r$$
+
+So if we let  $x=f_r$  , $\phi (f) = f^T \Omega f$ ,  $F=\{f_1,…,f_r\}$ 
+
+Then $E(F)= \sum_r \phi(f_r) $ , where each $\phi (f_r)$ is a convex function. Since sum of convex functions is convex, then we conclude that $E(F)$ is convex.
+
+###  Theorem: $\nabla E(F^k).(F^{k+1}-F^k)>0 \implies E(F^{k+1})>E(F^k)$
+
+ $$(F^{k+1}-F^k) . \nabla E(F^k)>0$$
 
 By definition of convexity: 
 
-$$E(F^{k+1}) \geq E(F^k)+ \Delta E(F^k).(F^{k+1}-F^k)$$
+$$E(F^{k+1}) \geq E(F^k)+ \nabla E(F^k).(F^{k+1}-F^k)$$
 
-$\Delta E(F^k).(F^{k+1}-F^k)>0$ then $E(F^{k+1})>E(R^k)$
+$\nabla E(F^k).(F^{k+1}-F^k)>0$ then $E(F^{k+1})>E(F^k)$ 
 
-**TODO** of E is the u infinity so we do an algorithm taht will guarantee this. (page rank)
-
- ![Screen Shot 2017-09-27 at 5.43.39 PM](/Users/ndibbern/Desktop/Screen Shot 2017-09-27 at 5.43.39 PM.png)
-
-![Screen Shot 2017-09-27 at 5.43.58 PM](/Users/ndibbern/Desktop/Screen Shot 2017-09-27 at 5.43.58 PM.png)
+$E$ being convex implies that the value of $E$ is always above its linearized approximation. We therefore need an alforithm that can guarantee that the linearized energy of a new partition $E(F^{k+1})$ be breater than the energy of the previous partition $E(F^k)$ increase, 
 
 ---
+
+## $H$
+
+We define $H^k = \nabla E(F^k)$ the heat bump at step $k$
+
+So that $H^k_r = \nabla E(f^k_r)$ is the linearized energy at step k for the class r
+
+### Theorem: $\nabla E(F^k) =H^{k} = \Omega F^{k}$
+
+See avobe
+
+## Algorithm
+
+Given a partition $F^k$ we use a greedy algorithm with complexity $O(n)$ to construct a new partition $F^{k+1}$ such that:
+
+$$(F^{k+1}-F^k) . \nabla E(F^k)>0$$
+
+$(F^{k+1}-F^k) . \nabla E(F^k)>0 \iff \nabla E(F^k)  F^{k+1}>\nabla E(F^k) F^k $
+
+Given $\nabla E(F^k) =H^{k} = WF^{k}$ the above is also equivalent to
+
+$\sum_{r}\left \langle H^k_r, f^{k+1}_r \right \rangle \geq \sum_{r}\left \langle H^k_r, f^{k}_r \right \rangle$
+
+### Theorem: $\sum_{r}\left \langle H^k_r, f^{k+1}_r \right \rangle \geq \sum_{i}\left \langle H^k_r, f^{k}_r \right \rangle \iff  \sum_{i} H^k_{i, \pi^{k+1}(i)} \geq \sum_{i} H^k_{i, \pi^{k}(i)}$
+
+It suffices to show that $\sum_{r}\left \langle H_r, f_r \right \rangle =  \sum_{i} H_{i, \pi(i)}$
+
+$$\sum_r \left \langle H_r^k, f_r^{k+1} \right \rangle \geq \sum_r \left \langle H_r^k, f_r^{k} \right \rangle$$ 
+
+$$ \sum_r \sum_i H_r^k (i) f_r^{k+1}(i) \geq \sum_r \sum_i H_r^k (i) f_r^k (i)$$
+
+$$\sum_i \sum_r H_{i,r}^k f_r^{k+1}(i) \geq \sum_i \sum_r H_{i,r}^k f_r^k (i)$$
+
+Now letting$\pi(i):\{1 ..n\}\to \{1..R\} $ be the  membership function, we have
+
+$$\sum_i H^k_{i, \pi^k+1 (i)} \geq \sum_i H^k_{i,\pi^k(i)}$$  (1)
+
+-----
+
+Now let $\Delta \subset V$ be the vertices who want th switch class, that is:
+
+$$\Delta = \{ i \in V : \pi^k (i) \notin \text{arg} \text{ max}_r H_{ir}^k\}$$
+
+Note that given any nonempty subset of $\hat{\Delta} \subset \Delta $, the partition
+
+$$ \pi^{k+1} (i) = $$
+
+$$\text{arg} \text{ max}_r H^k_{ir}$$ if $i \in \hat{\Delta}$ 
+
+$\pi^k(i) $ otherwhise
+
+satisfies the previous theorem conclusion with strict inequality. The question now is to find a subset $\hat{\Delta} \subset \Delta $ such that the new partition still satisfies the size constraints. We also want this subset $\hat{\Delta}$ to be as big as possible, otherwise the algorithm is going to stagnate.
+
+In short, $\Delta$ is the subset of vertices which would change clss under plain thresholding. The problem is that if all vertices change classes typically the balance cosntrain can be broken. The key, however is taht not all the vertices in $\Delta$ need to change class: any subsett of $\Delta$, wven if it contains only one vertex, whill still lead to a decrease in the cut value. The goal is then to look for the subset $\hat{\Delta} \in \Delta$ that leads to the biggest gain in eq (1) whole not breaking the size constraing. So this lead to the optimization problem from before.
+
+#### Steps
+
+The algorithm is short, at each step we do:
+
+* Compute $H^k = \Omega F^k$ where $F^k$ is the 0-1 indicator function of the current partition.
+* To get $F^{k+1}$ we threshold the matrix $H^k$, but before to change the class of the vertices who are asking to change, we pause and solve a small linear program. This linear program determines which vertex will be allowed to change class. We will accept only the most beneficial change and we will guarantee that the size constraints are satisfied.
 
 ## $\vec{u}$ or $\vec{p}$
 
@@ -322,3 +415,26 @@ $u^{\infty}=\frac{d}{|d|}$ where $|d|= \sum{d_i}$
 In general such a process can be applied to any subset $A$ of the graph. In such case, the vector $u$ would define the indicator function A normalized to be column stochastic as follows:
 
 $u=\frac{\mathbb{I}_A}{|A|}$
+
+
+
+
+
+**BELLOW NOT REALLY NEEDED:**
+
+By the spectral theorem, since $\Omega$ is symmetric, we can do the following:
+
+Let $x$ be a vector, then by spectral theorem,
+
+U is the eigenvector, $\Lambda$ a matrix with the eigenvalues $\lambda$ in the diagonal (in each of the directions of the eigenvectors, the function behaves like a parabola)
+
+$x^T \Omega x = x^T U \Lambda U ^T x = (U^Tx)^T \Lambda U x)$ (Change of basis)
+
+$=\left \langle U^T x, \Lambda U^T \right \rangle $
+
+Now, see that this is of similar form to the definition of E.
+
+Let $x=f_r$  , $\phi (f) = f^T \Omega f$ ,  $F=\{f_1,…,f_r\}$ and $\Phi (f)$ 
+
+Then $E(F)= \sum_r \phi(f_r) $ 
+
