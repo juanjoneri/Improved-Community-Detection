@@ -17,7 +17,7 @@ def init_nodes(n_nodes, centers, std):
     nodes / P: coordinates as np.array
     labels_true: the class they belong to (center)
     """
-    nodes, labels_true = make_blobs(n_samples=n_nodes, centers=centers, cluster_std=std, random_state=0)
+    nodes, labels_true = make_blobs(n_samples=n_nodes, centers=centers, cluster_std=std)
     return nodes, labels_true
 
 
@@ -111,21 +111,21 @@ def export_cluster(G, file_name):
         writer.writerows(G.edges)
 
 if __name__ == '__main__':
-    print('Number of nodes')
-    n_nodes = int(input())
-    print('Number of clusters')
-    n_clusters = int(input())
+    '''
+    Sample call
+    python3 create_cluster 90 ((0,0)(0,1)(1,0))
+    '''
+    import sys
+    import re
 
-    if n_nodes < 2 or n_clusters < 2:
-        print('Cannot build graph from that')
+    n_nodes = int(sys.argv[1])
+    c = list(map(int, re.findall(r'(\d)', sys.argv[2])))
+    if n_nodes < 2 or len(c) % 2 != 0:
+        print('try: python3 create_cluster 90 ((0,0)(0,1)(1,0))')
         sys.exit()
-    centers = []
-    for i in range(1, n_clusters+1):
-        print('Center of cluster {} as x,y'.format(i))
-        x, y = map(int, input().split(','))
-        centers.append([x, y])
-
-    G, coordinates, labels = create_cluster(n_nodes, centers, std=avg_center_distance(centers) / 3, k=avg_center_distance(centers) / 4)
+    centers = [(c[i], c[i+1]) for i in range(0, len(c), 2)]
+    d = avg_center_distance(centers)
+    G, coordinates, labels = create_cluster(n_nodes, centers, std=d/4, k=d/2)
 
     from plot_cluster import plot_G
     plot_G(G, coordinates, labels)
