@@ -14,17 +14,15 @@ single_values = {X: 6, Y: 11}
 list_values = {X: [1, 2, 3] ,Y: [9, 5, 2]}
 numpy_values = {X: np.array([1, 2, 3]), Y: np.array([9, 5, 2])}
 
-
-W = tf.placeholder(tf.float32, shape = (3, 2))
-S = tf.placeholder(tf.float32, shape = (4, 4))
-matrix = {
-W: np.array([[1,2], [3,4], [5,6]]),
-S: np.array([[0,0,1,1], [0,0,1,0], [1,1,0,0], [1,0,0,0]])
-}
-
-addition = tf.add(X, Y) # also W + Y
-subtraction = tf.subtract(X, Y)
+addition = tf.add(X, Y)
+subtraction = X - Y
 multiplication = tf.multiply(X, Y)
+
+W = tf.Variable(np.array([[1,2], [3,4], [5,6]]), dtype=tf.float32, name='W_matrix') # in general this is the input of our program
+                                                                  # so its a placeholder
+S = tf.Variable(np.array([[0,0,1,1], [0,0,1,0], [1,1,0,0], [1,0,0,0]]), dtype=tf.float32, name='square_matrix')
+w_init = W.initializer
+s_init = S.initializer
 
 # something more advanced like getting the degree matrix D of a square matrix S
 degree_D = tf.diag( tf.reduce_sum(S, 0) )
@@ -32,7 +30,7 @@ degree_D = tf.diag( tf.reduce_sum(S, 0) )
 # Control structure
 i = tf.Variable(0, name="counter")
 one = tf.constant(1)
-init_op = tf.global_variables_initializer()
+global_init = tf.global_variables_initializer()
 
 if __name__ == '__main__':
 
@@ -50,15 +48,17 @@ if __name__ == '__main__':
         print('\nCreate a diagonal matrix:\n', sess.run(tf.diag(X), feed_dict=numpy_values))
 
         print('\nOperations with Matrices')
-        print('W:\n', sess.run(W, feed_dict=matrix))
-        print('S:\n', sess.run(S, feed_dict=matrix))
-        print('W.t:\n', sess.run(tf.transpose(W), feed_dict=matrix))
-        print('2*S:\n', sess.run(tf.scalar_mul(2, S), feed_dict=matrix)) # should be a constant
-        print('S^(-1/2):\n', sess.run(tf.pow(S, -0.5), feed_dict=matrix))
-        print('get the degree:\n', sess.run(degree_D, feed_dict=matrix))
+        sess.run(w_init)
+        sess.run(s_init)
+        print('W:\n', sess.run(W))
+        print('S:\n', sess.run(S))
+        print('W.t:\n', sess.run(tf.transpose(W)))
+        print('2*S:\n', sess.run(tf.scalar_mul(2, S))) # should be a constant
+        print('S^(-1/2):\n', sess.run(tf.pow(S, -0.5)))
+        print('get the degree:\n', sess.run(degree_D))
 
         print('\nLoops:')
-        sess.run(init_op) # now need those variables
+        sess.run(global_init) # now need those variables
         for _ in range(3):
             sess.run(tf.assign(i, tf.add(i, one)))
             print(sess.run(i), end=' ')
