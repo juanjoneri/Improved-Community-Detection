@@ -7,16 +7,24 @@ Use this module for plotting and saving plots of clusters
 
 # More information
 https://networkx.github.io/documentation/stable/tutorial.html#nodes
+https://networkx.github.io/documentation/networkx-1.9/examples/drawing/weighted_graph.html
 '''
 
-def plot_G(G, coordinates, classes):
+def plot_G(G, coordinates=None, classes=None):
     '''
     # Inputs
     G: an nx graph to be plotted
     coordinates: a map that specifies the coordinates of each node in G
     classes: a list that with the classes of the nodes, to give each class a unique color
     '''
-    plt.plot()
+
+    fig = plt.figure()
+    fig.add_subplot(1,1,1)
+
+    # title = 'Partition' if classes else 'Graph'
+    # plt.title(title)
+    #        x0, y0, w, h
+    plt.axes([0, 0, 1, 1])
     nx.draw(G, coordinates, with_labels=True, node_color=classes)
     plt.show()
 
