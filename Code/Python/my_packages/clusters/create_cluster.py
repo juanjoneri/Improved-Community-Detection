@@ -100,30 +100,6 @@ def create_cluster(n_nodes, centers, std, k):
     coordinates = dict(list(enumerate(map(tuple, nodes)))) # a dict that maps to the cooordinates of each node, for plotting
     return G, coordinates, labels
 
-def export_cluster(G, file_name):
-    '''
-    Writes the contents of a graph as an adjacency list to a file
-
-    # Inputs:
-    G: a graph to save
-    file_name: the name of the file .csv to write to
-    '''
-    with open('{}.csv'.format(file_name), 'w') as result:
-        writer = csv.writer(result, dialect='excel')
-        writer.writerows(G.edges)
-
-def export_labels(labels, file_name):
-    '''
-    Writes the ground truth of the classes of the graph to filname.txt
-
-    # Inputs:
-    G: a graph to save
-    file_name: the name of the file .csv to write to
-    '''
-    with open('{}.txt'.format(file_name), 'w') as result:
-        for i in range(len(labels)):
-            result.write('{}, {}\n'.format(i, labels[i]))
-
 if __name__ == '__main__':
     '''
     Sample call
@@ -131,6 +107,8 @@ if __name__ == '__main__':
     '''
     import sys
     import re
+    from save_cluster import export_cluster, export_labels
+
     float_pat = r'([-+]?[0-9]+\.?[0-9]*)'
 
     n_nodes = int(sys.argv[1])
@@ -146,4 +124,4 @@ if __name__ == '__main__':
     plot_G(G, coordinates, labels)
     plot_G(G, coordinates)
     export_cluster(G, '{}n-{}c'.format(n_nodes, len(centers)))
-    export_labels(labels, '{}n-{}c'.format(n_nodes, len(centers)))
+    export_labels(labels, coordinates, '{}n-{}c'.format(n_nodes, len(centers)))

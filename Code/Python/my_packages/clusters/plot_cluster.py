@@ -18,7 +18,7 @@ def plot_G(G, coordinates=None, classes=[]):
     classes: a list that with the classes of the nodes, to give each class a unique color
     '''
     if any(classes):
-        colors_list = ['r', 'b', 'g']
+        colors_list = ['r', 'b', 'g', 'y']
         colors = list(map(lambda i: colors_list[i], classes))
     else:
         colors = ['w']

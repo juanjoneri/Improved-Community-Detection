@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
-from create_cluster import create_cluster, avg_center_distance, export_cluster
+from create_cluster import *
+from save_cluster import *
 from plot_cluster import plot_G
 
 """
@@ -17,4 +18,6 @@ if __name__ == '__main__':
     G, coordinates, labels = create_cluster(n_nodes=120, centers=centers, std=d/5, k=d/5)
 
     export_cluster(G, 'demo_W')
-    plot_G(G, coordinates, labels)
+    export_labels(labels, coordinates, 'demo_W_labels')
+    H = import_cluster('demo_W.csv')
+    plot_G(H, coordinates, labels)
