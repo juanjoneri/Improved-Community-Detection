@@ -251,9 +251,7 @@ Recall
 
 $E(f_1 , …, f_r) = \sum^R_{r=1} f_r^T \Omega f_r$ 
 
-Considering the following statement:
-
-$f(x+h) = f(x) +  \left \langle \nabla f(x) , h\right \rangle + O(df^2) $ 
+Knowing that $$f(x+h) = f(x) +  \left \langle \nabla f(x) , h\right \rangle + O(df^2) $$ 
 
 Then if we consider:
 
@@ -277,7 +275,7 @@ Then each term in the function, which is a sum is also convex
 
 By the Second-order conditions [convex optimization book]:
 
-Assuming f is twice differentiable, that is, its Hessian at each point in $\text{dom}f$, which is open. Then f is convex if and only if $\text{dom}f$ is convex and its Hessian is positive semidefinite: for all $x \in \text{dom}f$. In our case dom is R^n so we know it is convex.
+Assuming $f$ is twice differentiable, that is, its Hessian at each point in $\text{dom}f$, which is open. Then f is convex if and only if $\text{dom}f$ is convex and its Hessian is positive semidefinite: for all $x \in \text{dom}f$. In our case dom is $R^n$ so we know it is convex.
 
 The other condition follows from the fact that we know that $HE(F^k) = \Omega$
 
@@ -287,7 +285,7 @@ In our case, our Energy function looks like the following:
 
 $$E(f_1,f_2,…,f_r) = \sum_r f_r^T \Omega f_r$$
 
-So if we let  $x=f_r$  , $\phi (f) = f^T \Omega f$ ,  $F=\{f_1,…,f_r\}$ 
+So if we let  $x=f_r​$  , $\phi (f) = f^T \Omega f​$ ,  $F=\{f_1,…,f_r\}​$ 
 
 Then $E(F)= \sum_r \phi(f_r) $ , where each $\phi (f_r)$ is a convex function. Since sum of convex functions is convex, then we conclude that $E(F)$ is convex.
 
