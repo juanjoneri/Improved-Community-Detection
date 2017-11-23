@@ -28,12 +28,15 @@ def plot_G(G, coordinates=None, classes=None):
     nx.draw(G, coordinates, with_labels=True, node_color=classes)
     plt.show()
 
-def save_G(G, file_name):
+def save_G(G, file_name, plot_title='Graph'):
     '''
     # Inputs
     file_name: the name of the image to hold the plot
     '''
-    plt.plot()
+    fig = plt.figure()
+    plt.title(plot_title)
+    fig.add_subplot(1,1,1)
+    plt.axes([0, 0, 1, 1])
     nx.draw(G, with_labels=True, font_weight='bold')
     plt.savefig("{}.png".format(file_name))
 
