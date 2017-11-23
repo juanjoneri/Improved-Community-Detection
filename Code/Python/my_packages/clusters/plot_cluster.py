@@ -10,13 +10,18 @@ https://networkx.github.io/documentation/stable/tutorial.html#nodes
 https://networkx.github.io/documentation/networkx-1.9/examples/drawing/weighted_graph.html
 '''
 
-def plot_G(G, coordinates=None, classes=None):
+def plot_G(G, coordinates=None, classes=[]):
     '''
     # Inputs
     G: an nx graph to be plotted
     coordinates: a map that specifies the coordinates of each node in G
     classes: a list that with the classes of the nodes, to give each class a unique color
     '''
+    if any(classes):
+        colors_list = ['r', 'b', 'g']
+        colors = list(map(lambda i: colors_list[i], classes))
+    else:
+        colors = ['w']
 
     fig = plt.figure()
     fig.add_subplot(1,1,1)
@@ -25,7 +30,7 @@ def plot_G(G, coordinates=None, classes=None):
     # plt.title(title)
     #        x0, y0, w, h
     plt.axes([0, 0, 1, 1])
-    nx.draw(G, coordinates, with_labels=True, node_color=classes)
+    nx.draw(G, coordinates, with_labels=True, node_color=colors)
     plt.show()
 
 def save_G(G, file_name, plot_title='Graph'):
