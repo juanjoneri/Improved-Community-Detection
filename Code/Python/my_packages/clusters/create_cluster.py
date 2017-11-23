@@ -67,10 +67,11 @@ def cluster(nodes, k):
     G = nx.Graph()
     G.add_nodes_from(list(range(n)))
 
-    for i in range(1, n):
+    for i in range(n):
         closest_node = -1
         closest_distance = float("inf")
-        for j in range(i):
+        for j in range(n):
+            if i == j: continue
             d = distance(nodes[i], nodes[j])
             if d <= k:
                 G.add_edge(i, j)
@@ -78,6 +79,7 @@ def cluster(nodes, k):
                 closest_distance = d
                 closest_node = j
         G.add_edge(i, closest_node)
+        print(closest_node, closest_distance)
     return G
 
 def create_cluster(n_nodes, centers, std, k):
@@ -118,16 +120,18 @@ if __name__ == '__main__':
     '''
     import sys
     import re
+    float_pat = r'([-+]?[0-9]+\.?[0-9]*)'
 
     n_nodes = int(sys.argv[1])
-    c = list(map(int, re.findall(r'(\d+)', sys.argv[2])))
+    c = list(map(float, re.findall(float_pat, sys.argv[2])))
     if n_nodes < 2 or len(c) % 2 != 0:
-        print('try: python3 create_cluster 90 ((0,0)(0,1)(1,0))')
+        print('try: python3 create_cluster 90 ((-1.0, 0.98)(-40, 13)(10.33, 0))')
         sys.exit()
     centers = [(c[i], c[i+1]) for i in range(0, len(c), 2)]
     d = avg_center_distance(centers)
-    G, coordinates, labels = create_cluster(n_nodes, centers, std=d/5, k=d/3)
+    G, coordinates, labels = create_cluster(n_nodes, centers, std=d/5, k=d/4)
 
     from plot_cluster import plot_G
     plot_G(G, coordinates, labels)
     plot_G(G, coordinates)
+    export_cluster(G, '{}n-{}c'.format(n_nodes, len(centers)))
