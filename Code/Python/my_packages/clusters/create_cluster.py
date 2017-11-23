@@ -38,6 +38,7 @@ def avg_center_distance(centers):
     # Outupts
     the average distance between the centers in the list
     '''
+    if len(centers) == 1: return 1
     center_pairs = zip(centers[0:], centers[1:])
     distances = []
     for c1, c2 in center_pairs:
@@ -119,13 +120,14 @@ if __name__ == '__main__':
     import re
 
     n_nodes = int(sys.argv[1])
-    c = list(map(int, re.findall(r'(\d)', sys.argv[2])))
+    c = list(map(int, re.findall(r'(\d+)', sys.argv[2])))
     if n_nodes < 2 or len(c) % 2 != 0:
         print('try: python3 create_cluster 90 ((0,0)(0,1)(1,0))')
         sys.exit()
     centers = [(c[i], c[i+1]) for i in range(0, len(c), 2)]
     d = avg_center_distance(centers)
-    G, coordinates, labels = create_cluster(n_nodes, centers, std=d/4, k=d/2)
+    G, coordinates, labels = create_cluster(n_nodes, centers, std=d/5, k=d/3)
 
     from plot_cluster import plot_G
     plot_G(G, coordinates, labels)
+    plot_G(G, coordinates)
