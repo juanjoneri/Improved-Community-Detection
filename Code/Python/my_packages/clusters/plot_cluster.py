@@ -19,7 +19,7 @@ def plot_G(G, coordinates=None, classes=[]):
     '''
     if any(classes):
         colors_list = ['r', 'b', 'g', 'y']
-        colors = list(map(lambda i: colors_list[i], classes))
+        colors = list(map(lambda i: colors_list[int(i)], classes))
     else:
         colors = ['w']
 
