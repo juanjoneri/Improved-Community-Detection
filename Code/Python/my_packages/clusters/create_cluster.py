@@ -107,7 +107,8 @@ if __name__ == '__main__':
     '''
     import sys
     import re
-    from save_cluster import export_cluster, export_labels
+    from save_cluster import export_cluster, export_metadata
+    from plot_cluster import plot_G
 
     float_pat = r'([-+]?[0-9]+\.?[0-9]*)'
 
@@ -120,8 +121,7 @@ if __name__ == '__main__':
     d = avg_center_distance(centers)
     G, coordinates, labels = create_cluster(n_nodes, centers, std=d/4.5, k=d/2.5)
 
-    from plot_cluster import plot_G
     plot_G(G, coordinates, labels)
     plot_G(G, coordinates)
     export_cluster(G, '{}n-{}c'.format(n_nodes, len(centers)))
-    export_labels(labels, coordinates, '{}n-{}c'.format(n_nodes, len(centers)))
+    export_metadata(labels, coordinates, '{}n-{}c'.format(n_nodes, len(centers)))
