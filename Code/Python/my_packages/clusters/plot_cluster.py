@@ -15,13 +15,17 @@ def plot_G(G, coordinates=None, classes=[]):
     # Inputs
     G: an nx graph to be plotted
     coordinates: a map that specifies the coordinates of each node in G
-    classes: a list that with the classes of the nodes, to give each class a unique color
+    classes: a list that with the classes of the nodes, to give each class a unique color, or a `continous` set of values for shade panting 
     '''
+    colors = ['w']
     if any(classes):
-        colors_list = ['r', 'b', 'g', 'y']
-        colors = list(map(lambda i: colors_list[int(i)], classes))
-    else:
-        colors = ['w']
+        # colors represent descrete classes
+        if len(set(classes)) <= 5:
+            colors_list = ['r', 'b', 'g', 'y', 'w']
+            colors = list(map(lambda i: colors_list[int(i)], classes))
+        # colors represent a continuous value
+        else:
+            colors = classes
 
     fig = plt.figure()
     fig.add_subplot(1,1,1)
