@@ -7,12 +7,9 @@ Test basic math using tensorflow graphs:
 https://www.tensorflow.org/api_guides/python/math_ops#Arithmetic_Operators
 """
 
-X = tf.placeholder(tf.float32)
-Y = tf.placeholder(tf.float32)
-
-single_values = {X: 6, Y: 11}
-list_values = {X: [1, 2, 3] ,Y: [9, 5, 2]}
-numpy_values = {X: np.array([1, 2, 3]), Y: np.array([9, 5, 2])}
+# DECLARE VARIABLE NODES
+W = tf.placeholder(tf.float32)
+default = {W: np.array([[1, 2, 3], [], []])}
 
 addition = tf.add(X, Y)
 subtraction = X - Y

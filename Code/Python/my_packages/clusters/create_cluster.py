@@ -111,11 +111,16 @@ if __name__ == '__main__':
     from plot_cluster import plot_G
 
     float_pat = r'([-+]?[0-9]+\.?[0-9]*)'
+    instructions = 'try: python3 create_cluster 90 ((-1.0, 0.98)(-40, 13)(10.33, 0))'
+
+    if len(sys.argv) < 2:
+        print(instructions)
+        sys.exit()
 
     n_nodes = int(sys.argv[1])
     c = list(map(float, re.findall(float_pat, sys.argv[2])))
     if n_nodes < 2 or len(c) % 2 != 0:
-        print('try: python3 create_cluster 90 ((-1.0, 0.98)(-40, 13)(10.33, 0))')
+        print(instructions)
         sys.exit()
     centers = [(c[i], c[i+1]) for i in range(0, len(c), 2)]
     d = avg_center_distance(centers)
@@ -124,4 +129,4 @@ if __name__ == '__main__':
     plot_G(G, coordinates, labels)
     plot_G(G, coordinates)
     export_cluster(G, '{}n-{}c'.format(n_nodes, len(centers)))
-    export_metadata(labels, coordinates, '{}n-{}c'.format(n_nodes, len(centers)))
+    export_metadata(coordinates, labels, '{}n-{}c'.format(n_nodes, len(centers)))
