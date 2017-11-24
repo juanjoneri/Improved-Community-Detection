@@ -28,7 +28,7 @@ def export_metadata(coordinates, labels, file_name):
     coordinates: map of pairs of coordinates
     file_name: the name of the file .csv to write to
     '''
-    with open('{}-meta.txt'.format(file_name), 'w') as result:
+    with open('{}-meta.csv'.format(file_name), 'w') as result:
         for i in range(len(labels)):
             result.write('{}, {}, {}, {}\n'.format(i, labels[i], *coordinates[i]))
 
@@ -61,6 +61,6 @@ if __name__ == '__main__':
     export_cluster(G, 'demo_W')
     export_metadata(g_coordinates, g_labels, 'demo_W')
     H = import_cluster('demo_W-cluster.csv')
-    h_coordinates, h_labels = import_metadata('demo_W-meta.txt')
+    h_coordinates, h_labels = import_metadata('demo_W-meta.csv')
     print(h_coordinates)
     plot_G(H, h_coordinates, h_labels)
