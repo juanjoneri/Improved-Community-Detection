@@ -2,10 +2,14 @@ import networkx as nx
 import csv
 import numpy as np
 import pandas as pd
+import os
 '''
 # Description
 Use this module for saving and retreiving graphs, its connections, coordinates and labels.
 '''
+
+script_dir = os.path.dirname(__file__)
+examples = {'small':'examples/20-2/20n-2c-' , 'medium': 'examples/80-3/80n-3c-', 'big': None}
 
 def export_cluster(G, file_name):
     '''
@@ -47,6 +51,13 @@ def import_metadata(file_name):
     labels = data[:,1]
     return coordinates, labels
 
+def import_example(size='small'):
+    base = examples[size]
+    cluster_path = os.path.join(script_dir, base + 'cluster.csv')
+    meta_path = os.path.join(script_dir, base + 'meta.csv')
+    G = import_cluster(cluster_path)
+    coordinates, labels = import_metadata(meta_path)
+    return G, coordinates, labels
 
 if __name__ == '__main__':
     from create_cluster import *
