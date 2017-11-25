@@ -8,13 +8,13 @@ import tensorflow as tf
 
 class Algorithm:
 
-    one = tf.constant(1.)
-    cero = tf.constant(0.)
+    one = tf.constant(1., dtype=tf.float64)
+    cero = tf.constant(0., dtype=tf.float64)
 
-    def __init__(self, graph_W, partition_F, alpha):
+    def __init__(self, graph_W, alpha):
         self.graph_W = graph_W
-        self.partition_F = partition_F
-        self.u = tf.Variable([[1.],[0.],[0.],[0.],[1.],[1.],[1.],[0.],[1.],[0.],[1.],[1.],[1.],[0.],[0.],[1.],[0.],[1.],[0.],[0.]])
+        self.partition_F = self.initial_parition(20, 2)
+        self.U = tf.Variable(self.partition_F) # scores and partition are equal at first
         self.alpha = alpha
         self.difuse
 
@@ -25,9 +25,12 @@ class Algorithm:
         D_ = tf.diag((tf.pow(tf.diag_part(D), -0.5)))
         I = tf.eye(20, name='identity')
         Op = tf.matmul(D_, tf.matmul(W, D_), name='smooth_operator')
-        self.u = tf.assign(self.u, tf.scalar_mul(self.alpha, tf.matmul(Op, self.u)) + tf.scalar_mul((self.one - self.alpha), self.u))
-        return self.u
+        U = self.U
+        return tf.assign(self.U, tf.scalar_mul(self.alpha, tf.matmul(Op, self.U)) + tf.scalar_mul((self.one - self.alpha), self.partition_F))
 
+    def initial_parition(self, n, R):
+        F = tf.Variable(tf.zeros([n, R], dtype=tf.float64), name="part_packbone")
+        return F
 
 if __name__ == '__main__':
     import os
@@ -39,17 +42,13 @@ if __name__ == '__main__':
     n_nodes = 20
     n_clusters = 2
 
-    test_F = np.zeros((n_nodes, n_clusters))
-    test_F[0, 0] = 1
+    graph_W = tf.placeholder(tf.float64, [n_nodes, n_nodes])
+    alpha = tf.constant(0.9, dtype=tf.float64)
 
-    graph_W = tf.placeholder(tf.float32, [n_nodes, n_nodes])
-    partition_F = tf.placeholder(tf.float32, [n_nodes, n_clusters])
-    alpha = tf.constant(0.9)
-
-    algorithm = Algorithm(graph_W, partition_F, alpha)
+    algorithm = Algorithm(graph_W, alpha)
 
     sess = tf.Session()
-    sess.run(tf.initialize_all_variables())
+    sess.run(tf.global_variables_initializer())
 
-    F = sess.run(algorithm.difuse, {graph_W: small_W, partition_F: test_F})
+    F = sess.run(algorithm.difuse, {graph_W: small_W})
     print(F)
