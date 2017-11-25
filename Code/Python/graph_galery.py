@@ -25,6 +25,7 @@ https://www.tensorflow.org/versions/r0.12/get_started/basic_usage
 one = tf.constant(1.)
 R = tf.constant(2)
 n = tf.constant(20)
+alph = tf.constant(0.1)
 
 ### source nodes (do not need any input i.e. Constant)
 #R = tf.placeholder(tf.int32, name='n_clusters')
@@ -40,10 +41,11 @@ node_i = tf.placeholder(tf.int32, name='node_index') # value in [0, n-1]
 D = tf.diag(tf.reduce_sum(W, 0), name='degree')
 D_ = tf.diag((tf.pow(tf.diag_part(D), -0.5)))
 I = tf.eye(n, name='identity')
-L = tf.subtract(I, tf.matmul(D_, tf.matmul(W, D_)), name='Laplacian')
+Op = tf.matmul(D_, tf.matmul(W, D_), name='smooth_operator')
+L = tf.subtract(I, Op, name='Laplacian')
 
 ### Function Nodes
-difuse = tf.matmul(L, f) # f is a cluster
+difuse = tf.scalar_mul(alph, tf.matmul(Op, f)) + tf.scalar_mul((one - alph), f)
 
 ### Model nodes (to be trained)
 F = tf.Variable(tf.fill([n, R], 0.), name='Partition')
