@@ -30,6 +30,7 @@ n = tf.constant(20)
 #R = tf.placeholder(tf.int32, name='n_clusters')
 W = tf.placeholder(tf.float32, name='W') # The input adj matrix with 0s and 1s
 F_i = tf.placeholder(tf.int32, name='initial_parition')
+f = tf.placeholder(tf.float32, shape=[20, 1], name='cluster')
 
 clas_i = tf.placeholder(tf.int32, name='target_clas') # value in [0, R-1]
 node_i = tf.placeholder(tf.int32, name='node_index') # value in [0, n-1]
@@ -41,10 +42,14 @@ D_ = tf.diag((tf.pow(tf.diag_part(D), -0.5)))
 I = tf.eye(n, name='identity')
 L = tf.subtract(I, tf.matmul(D_, tf.matmul(W, D_)), name='Laplacian')
 
+### Function Nodes
+difuse = tf.matmul(L, f) # f is a cluster
+
 ### Model nodes (to be trained)
-F = tf.Variable(tf.fill([n, R], 0), name='Partition')
-clas = tf.scatter_update(tf.Variable(tf.zeros([R])), [clas_i], one)
-#clas = tf.assign(tf.zeros([R])[clas_i] , one) # gives [0, 0, 1] with a 1 on clas_i
+F = tf.Variable(tf.fill([n, R], 0.), name='Partition')
+# clas = tf.scatter_update(tf.Variable(tf.zeros([R])), [clas_i], one)
+generic_clas = tf.Variable(tf.zeros([R]))
+clas = tf.assign(generic_clas[clas_i] , one) # gives [0, 0, 1] with a 1 on clas_i
 #clas = tf.concat([tf.zeros(clas_i), [one], tf.zeros(R-clas_i-1)], 0) # to which class clas_i
 #change_clas = tf.scatter_update(F, [node_i], clas) #what node?, to which class?
 # sess.run(F.initializer)
@@ -57,9 +62,11 @@ clas = tf.scatter_update(tf.Variable(tf.zeros([R])), [clas_i], one)
 if __name__ == '__main__':
     G, coordinates, labels_true = import_example('small')
     W_i, R_i = nx_np(G)
-
+    f_i = np.vstack([1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+    print(f_i)
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
-        print(sess.run(D, feed_dict={W:W_i}))
-        print(sess.run(Ds, feed_dict={W:W_i}))
-        print(sess.run(L, feed_dict={W:W_i}))
+        #print(sess.run(L, feed_dict={W:W_i}))
+        #print(sess.run(clas, feed_dict={clas_i: 1}))
+        #print(sess.run(F))
+        print(sess.run(difuse, feed_dict={W: W_i, f: f_i,}))
