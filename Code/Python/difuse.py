@@ -23,9 +23,10 @@ https://www.tensorflow.org/versions/r0.12/get_started/basic_usage
 
 # Constant Nodes
 one = tf.constant(1.)
+cero = tf.constant(0.)
 R = tf.constant(2)
 n = tf.constant(20)
-alph = tf.constant(0.1)
+alph = tf.constant(0.90)
 
 ### source nodes (do not need any input i.e. Constant)
 #R = tf.placeholder(tf.int32, name='n_clusters')
@@ -45,10 +46,13 @@ Op = tf.matmul(D_, tf.matmul(W, D_), name='smooth_operator')
 L = tf.subtract(I, Op, name='Laplacian')
 
 ### Function Nodes
-difuse = tf.scalar_mul(alph, tf.matmul(Op, f)) + tf.scalar_mul((one - alph), f)
+A = tf.Variable([[1.],[0.],[0.],[0.],[1.],[1.],[1.],[0.],[1.],[0.],[1.],[1.],[1.],[0.],[0.],[1.],[0.],[1.],[0.],[0.]])
+u = tf.Variable([[1.],[0.],[0.],[0.],[1.],[1.],[1.],[0.],[1.],[0.],[1.],[1.],[1.],[0.],[0.],[1.],[0.],[1.],[0.],[0.]])
+difuse = tf.assign(u, tf.scalar_mul(alph, tf.matmul(Op, u)) + tf.scalar_mul((one - alph), A))
 
 ### Model nodes (to be trained)
 F = tf.Variable(tf.fill([n, R], 0.), name='Partition')
+
 # clas = tf.scatter_update(tf.Variable(tf.zeros([R])), [clas_i], one)
 generic_clas = tf.Variable(tf.zeros([R]))
 clas = tf.assign(generic_clas[clas_i] , one) # gives [0, 0, 1] with a 1 on clas_i
@@ -64,11 +68,15 @@ clas = tf.assign(generic_clas[clas_i] , one) # gives [0, 0, 1] with a 1 on clas_
 if __name__ == '__main__':
     G, coordinates, labels_true = import_example('small')
     W_i, R_i = nx_np(G)
-    f_i = np.vstack([1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
-    print(f_i)
+
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
-        #print(sess.run(L, feed_dict={W:W_i}))
-        #print(sess.run(clas, feed_dict={clas_i: 1}))
-        #print(sess.run(F))
-        print(sess.run(difuse, feed_dict={W: W_i, f: f_i,}))
+
+        fuc = [1,0,0,0,1,1,1,0,1,0,1,1,1,0,0,1,0,1,0,0.]
+        print(fuc)
+        plot_G(G, coordinates, fuc)
+        for _ in range(50):
+            fu = sess.run(difuse, feed_dict={W: W_i}).flatten()
+
+        print(fu)
+        plot_G(G, coordinates, fu, cont=True)

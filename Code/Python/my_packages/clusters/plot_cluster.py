@@ -10,23 +10,23 @@ https://networkx.github.io/documentation/stable/tutorial.html#nodes
 https://networkx.github.io/documentation/networkx-1.9/examples/drawing/weighted_graph.html
 '''
 
-def plot_G(G, coordinates=None, classes=[]):
+def plot_G(G, coordinates=None, classes=[], cont=False):
     '''
     # Inputs
     G: an nx graph to be plotted
     coordinates: a map that specifies the coordinates of each node in G
-    classes: a list that with the classes of the nodes, to give each class a unique color, or a `continous` set of values for shade panting 
+    classes: a list that with the classes of the nodes, to give each class a unique color, or a `continous` set of values for shade panting
     '''
     colors = ['w']
-    if any(classes):
-        # colors represent descrete classes
-        if len(set(classes)) <= 5:
-            colors_list = ['r', 'b', 'g', 'y', 'w']
-            colors = list(map(lambda i: colors_list[int(i)], classes))
-        # colors represent a continuous value
-        else:
-            colors = classes
-
+    # if any(classes):
+    #     # colors represent descrete classes
+    #     if not cont:
+    #         colors_list = ['r', 'b', 'g', 'y', 'w']
+    #         colors = list(map(lambda i: colors_list[int(i)], classes))
+    #     # colors represent a continuous value
+    #     else:
+    #         colors = classes
+    colors = classes
     fig = plt.figure()
     fig.add_subplot(1,1,1)
 
