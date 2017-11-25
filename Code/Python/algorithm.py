@@ -29,8 +29,10 @@ class Algorithm:
         return tf.assign(self.U, tf.scalar_mul(self.alpha, tf.matmul(Op, self.U)) + tf.scalar_mul((self.one - self.alpha), self.partition_F))
 
     def initial_parition(self, n, R):
-        F = tf.Variable(tf.zeros([n, R], dtype=tf.float64), name="part_packbone")
-        return F
+        F = np.zeros((n, R))
+        F[0,0]=1
+        F[3,1]=1
+        return tf.Variable(F, dtype=tf.float64)
 
 if __name__ == '__main__':
     import os
@@ -50,5 +52,9 @@ if __name__ == '__main__':
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
 
+    G = sess.run(algorithm.partition_F, {graph_W: small_W})
+    print(G)
     F = sess.run(algorithm.difuse, {graph_W: small_W})
     print(F)
+    G = sess.run(algorithm.partition_F, {graph_W: small_W})
+    print(G)
