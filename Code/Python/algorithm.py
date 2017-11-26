@@ -27,6 +27,10 @@ class Algorithm:
         D_ = tf.diag((tf.pow(tf.diag_part(self.D), -0.5)))                      # D^(-1/2)
         self._Op = tf.matmul(D_, tf.matmul(self.W, D_), name='smooth_operator') # D^(-1/2) W D^(-1/2)
 
+        # Testing
+        #self.g = self.create_random_group(10)
+        #self.g_i = self.threshold_group(self.g)
+
     @lazy_property
     def diffuse(self):
         W, F = self.W, self.F
@@ -40,18 +44,29 @@ class Algorithm:
         pass
 
     def create_group(self, R, r):
-        group = np.zeros((1,R))
-        group[0,r] = 1
-        return tf.Variable(group, dtype=tf.float64)
+        group = tf.concat([[0]*(r), tf.constant([1]), [0]*(R-r-1)], axis=0)
+        group = tf.reshape(group, [1,-1])
+        # group[0,r] = 1
+        return group
+        return tf.Variable([[1,0,0]], dtype=tf.float64)
 
-    def greate_random_group(self, R):
+    def create_random_group(self, R):
         return self.create_group(R, int(random.random()*R))
 
     def random_partition(self, n, R):
-        partition = self.greate_random_group(R)
+        partition = self.create_random_group(R)
         for _ in range(1, n):
-            partition = tf.concat([partition, self.greate_random_group(R)], 0)
+            partition = tf.concat([partition, self.create_random_group(R)], 0)
         return partition
+
+    def threshold_group(self, group):
+        max_i = tf.argmax(group, 1)
+        return self.create_group(self.R, max_i)
+
+        # data = tf.Variable([[1,2,3,4,5], [6,7,8,9,0], [1,2,3,4,5]])
+        # row = tf.gather(data, 2)
+        # new_row = tf.concat([row[:2], tf.constant([0]), row[3:]], axis=0)
+        # sparse_update = tf.scatter_update(data, tf.constant(2), new_row)
 
 if __name__ == '__main__':
     import os
@@ -76,12 +91,16 @@ if __name__ == '__main__':
 
         ini_F = sess.run(algorithm.F)
         print(ini_F)
+        #
+        # for _ in range(20):
+        #     H1 = sess.run(algorithm.diffuse)
+        # print(H1)
+        #
+        # final_F = sess.run(algorithm.F)
+        # # print(final_F)
+        # final_H = sess.run(algorithm.H)
+        # print(final_H)
 
-        for _ in range(20):
-            H1 = sess.run(algorithm.diffuse)
-        print(H1)
-
-        final_F = sess.run(algorithm.F)
-        print(final_F)
-        final_H = sess.run(algorithm.H)
-        print(final_H)
+        #g = sess.run(algorithm.g)
+        #g_i = sess.run(algorithm.g_i)
+        #print(g, g_i)

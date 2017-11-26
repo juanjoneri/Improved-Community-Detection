@@ -2,4 +2,5 @@
 Code/Data/*
 Code/*.asv
 /Code/Python/my_packages/clusters/__pycache__/
+/Code/Python/__pycache__/
 *.pyc
