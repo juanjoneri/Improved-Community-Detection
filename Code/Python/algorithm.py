@@ -5,11 +5,13 @@ from my_packages.clusters.nx_np import nx_np
 
 import numpy as np
 import tensorflow as tf
+import random
 
 class Algorithm:
 
     one = tf.constant(1., dtype=tf.float64)
     cero = tf.constant(0., dtype=tf.float64)
+    iterations = 50 # u^infinity
 
     def __init__(self, graph_W, alpha):
         self.graph_W = graph_W
@@ -17,6 +19,8 @@ class Algorithm:
         self.U = tf.Variable(self.partition_F) # scores and partition are equal at first
         self.alpha = alpha
         self.difuse
+        self.g = self.create_partition(20, 3)
+
 
     @lazy_property
     def difuse(self):
@@ -25,14 +29,33 @@ class Algorithm:
         D_ = tf.diag((tf.pow(tf.diag_part(D), -0.5)))
         I = tf.eye(20, name='identity')
         Op = tf.matmul(D_, tf.matmul(W, D_), name='smooth_operator')
-        U = self.U
-        return tf.assign(self.U, tf.scalar_mul(self.alpha, tf.matmul(Op, self.U)) + tf.scalar_mul((self.one - self.alpha), self.partition_F))
+        for _ in range(self.iterations):
+            self.U = tf.assign(self.U, tf.scalar_mul(self.alpha, tf.matmul(Op, self.U)) + tf.scalar_mul((self.one - self.alpha), self.partition_F))
+        return self.U
 
     def initial_parition(self, n, R):
-        F = np.zeros((n, R))
-        F[0,0]=1
-        F[3,1]=1
-        return tf.Variable(F, dtype=tf.float64)
+        # create a random initial partition
+        F = np.ones(n)
+        for _ in range(R-1):
+            F = np.append(F, np.zeros(n))
+        F = F.reshape((R, n))
+        np.random.shuffle(F)
+        print(F.T)
+        return tf.Variable(F.T, dtype=tf.float64)
+
+    def create_group(self, R, r):
+        group = np.zeros((1,R))
+        group[0,r] = 1
+        return tf.Variable(group, dtype=tf.float64)
+
+    def greate_random_group(self, R):
+        return self.create_group(R, int(random.random()*(R-1)))
+
+    def create_partition(self, n, R):
+        partition = self.greate_random_group(R)
+        for _ in range(n):
+            partition = tf.concat([partition, self.greate_random_group(R)], 0)
+        return partition
 
 if __name__ == '__main__':
     import os
@@ -52,9 +75,12 @@ if __name__ == '__main__':
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
 
+    initial_F = sess.run(algorithm.partition_F, {graph_W: small_W})
+    print(initial_F)
+    rank = sess.run(algorithm.difuse, {graph_W: small_W})
+    print(rank)
     G = sess.run(algorithm.partition_F, {graph_W: small_W})
     print(G)
-    F = sess.run(algorithm.difuse, {graph_W: small_W})
-    print(F)
-    G = sess.run(algorithm.partition_F, {graph_W: small_W})
-    print(G)
+    print('jere')
+    g = sess.run(algorithm.g, {graph_W: small_W})
+    print(g)
