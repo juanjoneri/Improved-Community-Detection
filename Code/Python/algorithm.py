@@ -17,7 +17,7 @@ class Algorithm:
         self.graph_W = tf.constant(graph_W, dtype=tf.float64)
         self.n = int(self.graph_W.get_shape()[1])
         self.partition_F = self.create_partition(self.n, R)
-        self.U = tf.Variable(self.partition_F)
+        self.H = tf.Variable(self.partition_F)
         self.alpha = tf.constant(alpha, dtype=tf.float64)
         self.R = tf.constant(R, dtype=tf.float64)
         self.difuse
@@ -30,8 +30,8 @@ class Algorithm:
         I = tf.eye(20, name='identity')
         Op = tf.matmul(D_, tf.matmul(W, D_), name='smooth_operator')
         for _ in range(self.iterations):
-            self.U = tf.assign(self.U, tf.scalar_mul(self.alpha, tf.matmul(Op, self.U)) + tf.scalar_mul((self.one - self.alpha), self.partition_F))
-        return self.U
+            self.H = tf.assign(self.H, tf.scalar_mul(self.alpha, tf.matmul(Op, self.H)) + tf.scalar_mul((self.one - self.alpha), self.partition_F))
+        return self.H
 
     def create_group(self, R, r):
         group = np.zeros((1,R))
