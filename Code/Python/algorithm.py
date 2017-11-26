@@ -15,12 +15,10 @@ class Algorithm:
 
     def __init__(self, graph_W, alpha):
         self.graph_W = graph_W
-        self.partition_F = self.initial_parition(20, 2)
-        self.U = tf.Variable(self.partition_F) # scores and partition are equal at first
+        self.partition_F = self.create_partition(20, 3)
+        self.U = tf.Variable(self.partition_F)
         self.alpha = alpha
         self.difuse
-        self.g = self.create_partition(20, 3)
-
 
     @lazy_property
     def difuse(self):
@@ -33,27 +31,17 @@ class Algorithm:
             self.U = tf.assign(self.U, tf.scalar_mul(self.alpha, tf.matmul(Op, self.U)) + tf.scalar_mul((self.one - self.alpha), self.partition_F))
         return self.U
 
-    def initial_parition(self, n, R):
-        # create a random initial partition
-        F = np.ones(n)
-        for _ in range(R-1):
-            F = np.append(F, np.zeros(n))
-        F = F.reshape((R, n))
-        np.random.shuffle(F)
-        print(F.T)
-        return tf.Variable(F.T, dtype=tf.float64)
-
     def create_group(self, R, r):
         group = np.zeros((1,R))
         group[0,r] = 1
         return tf.Variable(group, dtype=tf.float64)
 
     def greate_random_group(self, R):
-        return self.create_group(R, int(random.random()*(R-1)))
+        return self.create_group(R, int(random.random()*R))
 
     def create_partition(self, n, R):
         partition = self.greate_random_group(R)
-        for _ in range(n):
+        for _ in range(1, n):
             partition = tf.concat([partition, self.greate_random_group(R)], 0)
         return partition
 
@@ -79,8 +67,5 @@ if __name__ == '__main__':
     print(initial_F)
     rank = sess.run(algorithm.difuse, {graph_W: small_W})
     print(rank)
-    G = sess.run(algorithm.partition_F, {graph_W: small_W})
-    print(G)
-    print('jere')
-    g = sess.run(algorithm.g, {graph_W: small_W})
-    print(g)
+    final_F = sess.run(algorithm.partition_F, {graph_W: small_W})
+    print(final_F)
