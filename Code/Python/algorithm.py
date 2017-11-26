@@ -13,16 +13,17 @@ class Algorithm:
     cero = tf.constant(0., dtype=tf.float64)
     iterations = 50 # u^infinity
 
-    def __init__(self, graph_W, alpha):
-        self.graph_W = graph_W
-        self.partition_F = self.create_partition(20, 3)
+    def __init__(self, graph_W, R, alpha):
+        self.graph_W = tf.constant(graph_W, dtype=tf.float64)
+        self.n = int(self.graph_W.get_shape()[1])
+        self.partition_F = self.create_partition(self.n, R)
         self.U = tf.Variable(self.partition_F)
-        self.alpha = alpha
+        self.alpha = tf.constant(alpha, dtype=tf.float64)
+        self.R = tf.constant(R, dtype=tf.float64)
         self.difuse
 
     @lazy_property
     def difuse(self):
-        n = int(self.graph_W.get_shape()[1])
         W = self.graph_W
         D = tf.diag(tf.reduce_sum(W, 0), name='degree')
         D_ = tf.diag((tf.pow(tf.diag_part(D), -0.5)))
@@ -58,9 +59,10 @@ if __name__ == '__main__':
 
     #graph_W = tf.placeholder(tf.float64, [n_nodes, n_nodes])
     graph_W = tf.constant(small_W, dtype=tf.float64)
-    alpha = tf.constant(0.9, dtype=tf.float64)
+    alpha = 0.9
+    R = 3
 
-    algorithm = Algorithm(graph_W, alpha)
+    algorithm = Algorithm(small_W, R, alpha)
 
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
