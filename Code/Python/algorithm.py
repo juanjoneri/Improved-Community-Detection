@@ -22,6 +22,7 @@ class Algorithm:
 
     @lazy_property
     def difuse(self):
+        n = int(self.graph_W.get_shape()[1])
         W = self.graph_W
         D = tf.diag(tf.reduce_sum(W, 0), name='degree')
         D_ = tf.diag((tf.pow(tf.diag_part(D), -0.5)))
@@ -55,7 +56,8 @@ if __name__ == '__main__':
     n_nodes = 20
     n_clusters = 2
 
-    graph_W = tf.placeholder(tf.float64, [n_nodes, n_nodes])
+    #graph_W = tf.placeholder(tf.float64, [n_nodes, n_nodes])
+    graph_W = tf.constant(small_W, dtype=tf.float64)
     alpha = tf.constant(0.9, dtype=tf.float64)
 
     algorithm = Algorithm(graph_W, alpha)
@@ -63,9 +65,12 @@ if __name__ == '__main__':
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
 
-    initial_F = sess.run(algorithm.partition_F, {graph_W: small_W})
+    initial_F = sess.run(algorithm.partition_F)
     print(initial_F)
-    rank = sess.run(algorithm.difuse, {graph_W: small_W})
+
+    initial_F = sess.run(algorithm.partition_F)
+    print(initial_F)
+    rank = sess.run(algorithm.difuse)
     print(rank)
-    final_F = sess.run(algorithm.partition_F, {graph_W: small_W})
+    final_F = sess.run(algorithm.partition_F)
     print(final_F)
