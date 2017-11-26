@@ -11,26 +11,28 @@ class Algorithm:
 
     one = tf.constant(1., dtype=tf.float64)
     cero = tf.constant(0., dtype=tf.float64)
-    iterations = 50 # u^infinity
 
-    def __init__(self, graph_W, R, alpha):
-        self.graph_W = tf.constant(graph_W, dtype=tf.float64)
-        self.n = int(self.graph_W.get_shape()[1])
-        self.partition_F = self.create_partition(self.n, R)
-        self.H = tf.Variable(self.partition_F)
-        self.alpha = tf.constant(alpha, dtype=tf.float64)
-        self.R = tf.constant(R, dtype=tf.float64)
-        self.difuse
+    def __init__(self, W, R, a):
+        # Properties
+        self.W = tf.constant(W, dtype=tf.float64)     # Graph's adj matrix
+        self.n = int(self.W.get_shape()[1])           # Number of vertexes
+        self.F = self.create_partition(self.n, R)     # Current partition: initialized random
+        self.H = tf.Variable(self.F)                  # Heat bump: initialized to F
+        self.a = tf.constant(a, dtype=tf.float64)     # Alpha: diffusion parameter
+        # try to  change to int
+        self.R = tf.constant(R, dtype=tf.float64)     # Target number of communities
+        # Paremeters
+        self.I = tf.eye(self.n, name='Identity')
+        self.D = tf.diag(tf.reduce_sum(self.W, 0), name='Degree')
+        D_ = tf.diag((tf.pow(tf.diag_part(self.D), -0.5)))
+        self._Op = tf.matmul(D_, tf.matmul(self.W, D_), name='smooth_operator')
 
     @lazy_property
-    def difuse(self):
-        W = self.graph_W
-        D = tf.diag(tf.reduce_sum(W, 0), name='degree')
-        D_ = tf.diag((tf.pow(tf.diag_part(D), -0.5)))
-        I = tf.eye(20, name='identity')
-        Op = tf.matmul(D_, tf.matmul(W, D_), name='smooth_operator')
-        for _ in range(self.iterations):
-            self.H = tf.assign(self.H, tf.scalar_mul(self.alpha, tf.matmul(Op, self.H)) + tf.scalar_mul((self.one - self.alpha), self.partition_F))
+    def diffuse(self):
+        W, F = self.W, self.F
+        Op = self._Op
+        cero, one, a = self.cero, self.one, self.a
+        self.H = tf.assign(self.H, tf.scalar_mul(a, tf.matmul(Op, self.H)) + tf.scalar_mul((one - a), F))
         return self.H
 
     def create_group(self, R, r):
@@ -67,12 +69,12 @@ if __name__ == '__main__':
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
 
-    initial_F = sess.run(algorithm.partition_F)
-    print(initial_F)
 
-    initial_F = sess.run(algorithm.partition_F)
-    print(initial_F)
-    rank = sess.run(algorithm.difuse)
+    rank = sess.run(algorithm.diffuse)
     print(rank)
-    final_F = sess.run(algorithm.partition_F)
+    rank = sess.run(algorithm.diffuse)
+    print(rank)
+    final_F = sess.run(algorithm.F)
     print(final_F)
+    final_H = sess.run(algorithm.H)
+    print(final_H)
