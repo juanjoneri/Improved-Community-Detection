@@ -9,23 +9,23 @@ import random
 
 class Algorithm:
 
-    one = tf.constant(1., dtype=tf.float64)
-    cero = tf.constant(0., dtype=tf.float64)
+    one = tf.constant(1, dtype=tf.float64)
+    cero = tf.constant(0, dtype=tf.float64)
 
     def __init__(self, W, R, a):
         # Properties
-        self.W = tf.constant(W, dtype=tf.float64)     # Graph's adj matrix
-        self.n = int(self.W.get_shape()[1])           # Number of vertexes
-        self.F = self.create_partition(self.n, R)     # Current partition: initialized random
-        self.H = tf.Variable(self.F)                  # Heat bump: initialized to F
-        self.a = tf.constant(a, dtype=tf.float64)     # Alpha: diffusion parameter
-        # try to  change to int
-        self.R = tf.constant(R, dtype=tf.float64)     # Target number of communities
-        # Paremeters
-        self.I = tf.eye(self.n, name='Identity')
-        self.D = tf.diag(tf.reduce_sum(self.W, 0), name='Degree')
-        D_ = tf.diag((tf.pow(tf.diag_part(self.D), -0.5)))
-        self._Op = tf.matmul(D_, tf.matmul(self.W, D_), name='smooth_operator')
+        self.W = tf.constant(W, dtype=tf.float64)          # Graph's adj matrix
+        self.n = int(self.W.get_shape()[1])                # Number of vertexes
+        self.R = R                                         # Target number of communities
+        self.F = self.random_partition(self.n, self.R)     # Current partition: initialized random
+        self.H = tf.Variable(self.F)                       # Heat bump: initialized to F
+
+        # Operators
+        self.a = tf.constant(a, dtype=tf.float64)                               # Alpha: diffusion parameter
+        self.I = tf.eye(self.n, name='Identity')                                # Identity matrix
+        self.D = tf.diag(tf.reduce_sum(self.W, 0), name='Degree')               # Degree Matrix of W
+        D_ = tf.diag((tf.pow(tf.diag_part(self.D), -0.5)))                      # D^(-1/2)
+        self._Op = tf.matmul(D_, tf.matmul(self.W, D_), name='smooth_operator') # D^(-1/2) W D^(-1/2)
 
     @lazy_property
     def diffuse(self):
@@ -35,6 +35,10 @@ class Algorithm:
         self.H = tf.assign(self.H, tf.scalar_mul(a, tf.matmul(Op, self.H)) + tf.scalar_mul((one - a), F))
         return self.H
 
+    @lazy_property
+    def threshold(self):
+        pass
+
     def create_group(self, R, r):
         group = np.zeros((1,R))
         group[0,r] = 1
@@ -43,7 +47,7 @@ class Algorithm:
     def greate_random_group(self, R):
         return self.create_group(R, int(random.random()*R))
 
-    def create_partition(self, n, R):
+    def random_partition(self, n, R):
         partition = self.greate_random_group(R)
         for _ in range(1, n):
             partition = tf.concat([partition, self.greate_random_group(R)], 0)
@@ -69,11 +73,13 @@ if __name__ == '__main__':
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
 
+    ini_F = sess.run(algorithm.F)
+    print(ini_F)
 
-    rank = sess.run(algorithm.diffuse)
-    print(rank)
-    rank = sess.run(algorithm.diffuse)
-    print(rank)
+    for _ in range(20):
+        H1 = sess.run(algorithm.diffuse)
+    print(H1)
+
     final_F = sess.run(algorithm.F)
     print(final_F)
     final_H = sess.run(algorithm.H)
