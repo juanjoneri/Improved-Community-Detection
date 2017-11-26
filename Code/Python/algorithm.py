@@ -44,11 +44,8 @@ class Algorithm:
         pass
 
     def create_group(self, R, r):
-        group = tf.concat([[0]*(r), tf.constant([1]), [0]*(R-r-1)], axis=0)
-        group = tf.reshape(group, [1,-1])
-        # group[0,r] = 1
-        return group
-        return tf.Variable([[1,0,0]], dtype=tf.float64)
+        group = tf.concat([tf.zeros([r]), tf.constant([1], dtype=tf.float32), tf.zeros([R-r-1])], axis=0)
+        return tf.reshape(group, [1,-1])
 
     def create_random_group(self, R):
         return self.create_group(R, int(random.random()*R))
