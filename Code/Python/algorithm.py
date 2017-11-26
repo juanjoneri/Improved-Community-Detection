@@ -70,17 +70,18 @@ if __name__ == '__main__':
 
     algorithm = Algorithm(small_W, R, alpha)
 
-    sess = tf.Session()
-    sess.run(tf.global_variables_initializer())
+    # make sure the session is closed
+    with tf.Session() as sess:
+        sess.run(tf.global_variables_initializer())
 
-    ini_F = sess.run(algorithm.F)
-    print(ini_F)
+        ini_F = sess.run(algorithm.F)
+        print(ini_F)
 
-    for _ in range(20):
-        H1 = sess.run(algorithm.diffuse)
-    print(H1)
+        for _ in range(20):
+            H1 = sess.run(algorithm.diffuse)
+        print(H1)
 
-    final_F = sess.run(algorithm.F)
-    print(final_F)
-    final_H = sess.run(algorithm.H)
-    print(final_H)
+        final_F = sess.run(algorithm.F)
+        print(final_F)
+        final_H = sess.run(algorithm.H)
+        print(final_H)
