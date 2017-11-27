@@ -15,21 +15,21 @@ class Algorithm:
     def __init__(self, W, R, a):
         # Properties
         self.W = tf.constant(W, dtype=tf.float64)          # Graph's adj matrix
-        self.n = int(self.W.get_shape()[1])                # Number of vertexes
-        self.R = R                                         # Target number of communities
-        self.F = self.random_partition(self.n, self.R)     # Current partition: initialized random
+        self.n = int(self.W.get_shape()[1])                    # Number of vertexes
+        self.R = R                           # Target number of communities
+        self.F = self.random_partition()                   # Current partition: initialized random
         self.H = tf.Variable(self.F)                       # Heat bump: initialized to F
 
         # Operators
-        self.a = tf.constant(a, dtype=tf.float64)                               # Alpha: diffusion parameter
-        self.I = tf.eye(self.n, name='Identity')                                # Identity matrix
-        self.D = tf.diag(tf.reduce_sum(self.W, 0), name='Degree')               # Degree Matrix of W
-        D_ = tf.diag((tf.pow(tf.diag_part(self.D), -0.5)))                      # D^(-1/2)
-        self._Op = tf.matmul(D_, tf.matmul(self.W, D_), name='smooth_operator') # D^(-1/2) W D^(-1/2)
+        self.a = tf.constant(a, dtype=tf.float64)          # Alpha: diffusion parameter
+        self.I = tf.eye(self.n)                            # Identity matrix
+        self.D = tf.diag(tf.reduce_sum(self.W, 0))         # Degree Matrix of W
+        D_ = tf.diag((tf.pow(tf.diag_part(self.D), -0.5))) # D^(-1/2)
+        self._Op = tf.matmul(D_, tf.matmul(self.W, D_))    # D^(-1/2) W D^(-1/2)
 
         # Testing
-        #self.g = self.create_random_group(10)
-        #self.g_i = self.threshold_group(self.g)
+        # self.g = self.create_random_group(10)
+        # self.g_i = self.threshold_group(self.g)
 
     @lazy_property
     def diffuse(self):
@@ -43,22 +43,23 @@ class Algorithm:
     def threshold(self):
         pass
 
-    def create_group(self, R, r):
-        group = tf.concat([tf.zeros([r], dtype=tf.float64), tf.constant([1], dtype=tf.float64), tf.zeros([R-r-1], dtype=tf.float64)], axis=0)
+    def create_group(self, r):
+        group = tf.concat([tf.zeros([r], dtype=tf.float64), tf.constant([1], dtype=tf.float64), tf.zeros([self.R-r-1], dtype=tf.float64)], axis=0)
         return tf.reshape(group, [1,-1])
 
-    def create_random_group(self, R):
-        return self.create_group(R, int(random.random()*R))
+    def create_random_group(self):
+        ran = tf.constant(random.random(), dtype=tf.float64)
+        return self.create_group(int(random.random() * self.R))
 
-    def random_partition(self, n, R):
-        partition = self.create_random_group(R)
-        for _ in range(1, n):
-            partition = tf.concat([partition, self.create_random_group(R)], 0)
+    def random_partition(self):
+        partition = self.create_random_group()
+        for _ in range(1, self.n):
+            partition = tf.concat([partition, self.create_random_group()], 0)
         return partition
 
     def threshold_group(self, group):
         max_i = tf.argmax(group, 1)
-        return self.create_group(self.R, max_i)
+        return self.create_group(max_i)
 
         # data = tf.Variable([[1,2,3,4,5], [6,7,8,9,0], [1,2,3,4,5]])
         # row = tf.gather(data, 2)
@@ -78,7 +79,7 @@ if __name__ == '__main__':
     #graph_W = tf.placeholder(tf.float64, [n_nodes, n_nodes])
     graph_W = tf.constant(small_W, dtype=tf.float64)
     alpha = 0.9
-    R = 3
+    R = 2
 
     algorithm = Algorithm(small_W, R, alpha)
 
@@ -87,17 +88,17 @@ if __name__ == '__main__':
         sess.run(tf.global_variables_initializer())
 
         ini_F = sess.run(algorithm.F)
-        print(ini_F)
+        print('F', ini_F)
 
         for _ in range(20):
             H1 = sess.run(algorithm.diffuse)
-        print(H1)
+        print('H', H1)
 
         final_F = sess.run(algorithm.F)
-        # print(final_F)
+        print('F', final_F)
         final_H = sess.run(algorithm.H)
-        print(final_H)
+        print('H', final_H)
 
-        g = sess.run(algorithm.g)
-        g_i = sess.run(algorithm.g_i)
-        print(g, g_i)
+        # g = sess.run(algorithm.g)
+        # g_i = sess.run(algorithm.g_i)
+        # print(g, g_i)
