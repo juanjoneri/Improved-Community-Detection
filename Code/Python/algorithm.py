@@ -28,8 +28,9 @@ class Algorithm:
         self._Op = tf.matmul(D_, tf.matmul(self.W, D_))    # D^(-1/2) W D^(-1/2)
 
         #Testing
-        self.g = self.create_random_group()
-        self.g_i = self.threshold_group(self.g)
+        # self.g = self.create_random_group()
+        # self.g_i = self.threshold_group(self.g)
+        # self.Ht = tf.reshape(self.H[1,:] , [1, -1])
 
     @lazy_property
     def diffuse(self):
@@ -41,6 +42,15 @@ class Algorithm:
 
     @lazy_property
     def threshold(self):
+        H = self.H
+        v = tf.Variable(tf.reshape(H[0,:] , [1, -1]))
+        partition = self.threshold_group(v)
+        # for i in range(1, self.n):
+        #     partition = tf.concat([partition, self.threshold_group(tf.reshape(self.H[i,:] , [1, -1]))], 0)
+        return partition
+
+    @lazy_property
+    def cut(self):
         pass
 
     def create_group(self, r):
@@ -52,17 +62,11 @@ class Algorithm:
         return self.create_group(int(random.random() * self.R))
 
     def random_partition(self):
-        partition = self.create_random_group()
-        for _ in range(1, self.n):
-            partition = tf.concat([partition, self.create_random_group()], 0)
-        return partition
+        indices = tf.random_uniform([1,self.n], minval=0, maxval=self.R)
+        return tf.squeeze(tf.one_hot(tf.cast(indices, tf.int32), self.R, dtype=tf.float64))
 
     def threshold_group(self, group):
         max_i = tf.argmax(group, 1)
-        new_group = tf.Variable(tf.squeeze(group))
-
-        # max_v = tf.gather(new_group, max_i)
-        # zero = tf.Variable(tf.zeros(self.R), dtype = tf.float64)
         new_group = tf.scatter_update(tf.Variable(tf.zeros(self.R, dtype='float64')), max_i, [self.one])
         return tf.reshape(new_group, [1,-1])
 
@@ -88,17 +92,22 @@ if __name__ == '__main__':
         sess.run(tf.global_variables_initializer())
 
         ini_F = sess.run(algorithm.F)
+        ini_H = sess.run(algorithm.H)
         print('F', ini_F)
+        print('H', ini_H)
 
         for _ in range(20):
-            H1 = sess.run(algorithm.diffuse)
-        print('H', H1)
+            sess.run(algorithm.diffuse)
 
         final_F = sess.run(algorithm.F)
         print('F', final_F)
         final_H = sess.run(algorithm.H)
         print('H', final_H)
 
-        g = sess.run(algorithm.g)
-        g_i = sess.run(algorithm.g_i)
-        print(g, g_i)
+        # g = sess.run(algorithm.g)
+        # g_i = sess.run(algorithm.g_i)
+        #
+        # print(g, g_i)
+
+        HH = sess.run(algorithm.threshold)
+        print(HH)
