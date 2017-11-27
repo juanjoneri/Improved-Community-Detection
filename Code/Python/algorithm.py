@@ -44,7 +44,7 @@ class Algorithm:
         pass
 
     def create_group(self, R, r):
-        group = tf.concat([tf.zeros([r]), tf.constant([1], dtype=tf.float32), tf.zeros([R-r-1])], axis=0)
+        group = tf.concat([tf.zeros([r], dtype=tf.float64), tf.constant([1], dtype=tf.float64), tf.zeros([R-r-1], dtype=tf.float64)], axis=0)
         return tf.reshape(group, [1,-1])
 
     def create_random_group(self, R):
@@ -88,16 +88,16 @@ if __name__ == '__main__':
 
         ini_F = sess.run(algorithm.F)
         print(ini_F)
-        #
-        # for _ in range(20):
-        #     H1 = sess.run(algorithm.diffuse)
-        # print(H1)
-        #
-        # final_F = sess.run(algorithm.F)
-        # # print(final_F)
-        # final_H = sess.run(algorithm.H)
-        # print(final_H)
 
-        #g = sess.run(algorithm.g)
-        #g_i = sess.run(algorithm.g_i)
-        #print(g, g_i)
+        for _ in range(20):
+            H1 = sess.run(algorithm.diffuse)
+        print(H1)
+
+        final_F = sess.run(algorithm.F)
+        # print(final_F)
+        final_H = sess.run(algorithm.H)
+        print(final_H)
+
+        g = sess.run(algorithm.g)
+        g_i = sess.run(algorithm.g_i)
+        print(g, g_i)
