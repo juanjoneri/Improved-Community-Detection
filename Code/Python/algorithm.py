@@ -42,24 +42,12 @@ class Algorithm:
 
     @lazy_property
     def threshold(self):
-        H = self.H
-        v = tf.Variable(tf.reshape(H[0,:] , [1, -1]))
-        partition = self.threshold_group(v)
-        # for i in range(1, self.n):
-        #     partition = tf.concat([partition, self.threshold_group(tf.reshape(self.H[i,:] , [1, -1]))], 0)
-        return partition
+        indices = tf.argmax(self.H, axis=1)
+        return tf.squeeze(tf.one_hot(tf.cast(indices, tf.int32), self.R, dtype=tf.float64))
 
     @lazy_property
     def cut(self):
         pass
-
-    def create_group(self, r):
-        group = tf.concat([tf.zeros([r], dtype=tf.float64), [self.one], tf.zeros([self.R-r-1], dtype=tf.float64)], axis=0)
-        return tf.reshape(group, [1,-1])
-
-    def create_random_group(self):
-        ran = tf.constant(random.random(), dtype=tf.float64)
-        return self.create_group(int(random.random() * self.R))
 
     def random_partition(self):
         indices = tf.random_uniform([1,self.n], minval=0, maxval=self.R)
