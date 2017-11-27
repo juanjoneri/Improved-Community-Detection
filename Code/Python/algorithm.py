@@ -5,7 +5,6 @@ from my_packages.clusters.nx_np import nx_np
 
 import numpy as np
 import tensorflow as tf
-import random
 
 class Algorithm:
 
@@ -27,11 +26,6 @@ class Algorithm:
         D_ = tf.diag((tf.pow(tf.diag_part(self.D), -0.5))) # D^(-1/2)
         self._Op = tf.matmul(D_, tf.matmul(self.W, D_))    # D^(-1/2) W D^(-1/2)
 
-        #Testing
-        # self.g = self.create_random_group()
-        # self.g_i = self.threshold_group(self.g)
-        # self.Ht = tf.reshape(self.H[1,:] , [1, -1])
-
     @lazy_property
     def diffuse(self):
         W, F = self.W, self.F
@@ -43,20 +37,17 @@ class Algorithm:
     @lazy_property
     def threshold(self):
         indices = tf.argmax(self.H, axis=1)
-        return tf.squeeze(tf.one_hot(tf.cast(indices, tf.int32), self.R, dtype=tf.float64))
+        self.F = tf.squeeze(tf.one_hot(tf.cast(indices, tf.int32), self.R, dtype=tf.float64))
+        return self.F
 
     @lazy_property
     def cut(self):
-        pass
+        F_C = tf.ones_like(self.F) - self.F
+        return tf.matmul(tf.transpose(F_C), tf.matmul(self.W, self.F))
 
     def random_partition(self):
         indices = tf.random_uniform([1,self.n], minval=0, maxval=self.R)
         return tf.squeeze(tf.one_hot(tf.cast(indices, tf.int32), self.R, dtype=tf.float64))
-
-    def threshold_group(self, group):
-        max_i = tf.argmax(group, 1)
-        new_group = tf.scatter_update(tf.Variable(tf.zeros(self.R, dtype='float64')), max_i, [self.one])
-        return tf.reshape(new_group, [1,-1])
 
 if __name__ == '__main__':
     import os
@@ -97,5 +88,9 @@ if __name__ == '__main__':
         #
         # print(g, g_i)
 
-        HH = sess.run(algorithm.threshold)
-        print(HH)
+        cut = sess.run(algorithm.cut)
+        print('cut', cut)
+
+        sess.run(algorithm.threshold)
+        cut = sess.run(algorithm.cut)
+        print('after thres cut', cut)
