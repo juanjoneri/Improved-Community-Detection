@@ -60,7 +60,10 @@ class Algorithm:
     def threshold_group(self, group):
         max_i = tf.argmax(group, 1)
         new_group = tf.Variable(tf.squeeze(group))
-        new_group = tf.scatter_update(new_group, max_i, [self.cero])
+
+        # max_v = tf.gather(new_group, max_i)
+        # zero = tf.Variable(tf.zeros(self.R), dtype = tf.float64)
+        new_group = tf.scatter_update(tf.Variable(tf.zeros(self.R, dtype='float64')), max_i, [self.one])
         return tf.reshape(new_group, [1,-1])
 
 if __name__ == '__main__':
