@@ -27,9 +27,9 @@ class Algorithm:
         D_ = tf.diag((tf.pow(tf.diag_part(self.D), -0.5))) # D^(-1/2)
         self._Op = tf.matmul(D_, tf.matmul(self.W, D_))    # D^(-1/2) W D^(-1/2)
 
-        # Testing
-        # self.g = self.create_random_group(10)
-        # self.g_i = self.threshold_group(self.g)
+        #Testing
+        self.g = self.create_random_group()
+        self.g_i = self.threshold_group(self.g)
 
     @lazy_property
     def diffuse(self):
@@ -44,7 +44,7 @@ class Algorithm:
         pass
 
     def create_group(self, r):
-        group = tf.concat([tf.zeros([r], dtype=tf.float64), tf.constant([1], dtype=tf.float64), tf.zeros([self.R-r-1], dtype=tf.float64)], axis=0)
+        group = tf.concat([tf.zeros([r], dtype=tf.float64), [self.one], tf.zeros([self.R-r-1], dtype=tf.float64)], axis=0)
         return tf.reshape(group, [1,-1])
 
     def create_random_group(self):
@@ -59,12 +59,9 @@ class Algorithm:
 
     def threshold_group(self, group):
         max_i = tf.argmax(group, 1)
-        return self.create_group(max_i)
-
-        # data = tf.Variable([[1,2,3,4,5], [6,7,8,9,0], [1,2,3,4,5]])
-        # row = tf.gather(data, 2)
-        # new_row = tf.concat([row[:2], tf.constant([0]), row[3:]], axis=0)
-        # sparse_update = tf.scatter_update(data, tf.constant(2), new_row)
+        new_group = tf.Variable(tf.squeeze(group))
+        new_group = tf.scatter_update(new_group, max_i, [self.cero])
+        return tf.reshape(new_group, [1,-1])
 
 if __name__ == '__main__':
     import os
@@ -99,6 +96,6 @@ if __name__ == '__main__':
         final_H = sess.run(algorithm.H)
         print('H', final_H)
 
-        # g = sess.run(algorithm.g)
-        # g_i = sess.run(algorithm.g_i)
-        # print(g, g_i)
+        g = sess.run(algorithm.g)
+        g_i = sess.run(algorithm.g_i)
+        print(g, g_i)
