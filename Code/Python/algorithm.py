@@ -41,6 +41,10 @@ class Algorithm:
         return self.F
 
     @lazy_property
+    def labels(self):
+        return tf.argmax(self.F, axis=1)
+
+    @lazy_property
     def cut(self):
         F_C = tf.ones_like(self.F) - self.F
         return tf.matmul(tf.transpose(F_C), tf.matmul(self.W, self.F))
@@ -57,9 +61,8 @@ if __name__ == '__main__':
     small_W, small_R = nx_np(G)
 
     n_nodes = 20
-    n_clusters = 2
+    n_clusters = small_R
 
-    #graph_W = tf.placeholder(tf.float64, [n_nodes, n_nodes])
     graph_W = tf.constant(small_W, dtype=tf.float64)
     alpha = 0.9
     R = 2
@@ -70,27 +73,17 @@ if __name__ == '__main__':
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
 
-        ini_F = sess.run(algorithm.F)
-        ini_H = sess.run(algorithm.H)
-        print('F', ini_F)
-        print('H', ini_H)
+        ini_cut = sess.run(algorithm.cut)
+        print('Initial cut', ini_cut)
 
-        for _ in range(20):
-            sess.run(algorithm.diffuse)
+        for i in range(10):
+            for _ in range(20):
+                sess.run(algorithm.diffuse)
+            current_F = sess.run(algorithm.threshold)
+            current_Labels = sess.run(algorithm.labels)
+            current_cut = sess.run(algorithm.cut)
+            print('step', i, current_Labels, '\n' , current_cut)
+            plot_G(G, coordinates, current_Labels)
+            print()
 
-        final_F = sess.run(algorithm.F)
-        print('F', final_F)
-        final_H = sess.run(algorithm.H)
-        print('H', final_H)
-
-        # g = sess.run(algorithm.g)
-        # g_i = sess.run(algorithm.g_i)
-        #
-        # print(g, g_i)
-
-        cut = sess.run(algorithm.cut)
-        print('cut', cut)
-
-        sess.run(algorithm.threshold)
-        cut = sess.run(algorithm.cut)
-        print('after thres cut', cut)
+        print(labels_true)
