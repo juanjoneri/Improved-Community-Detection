@@ -44,8 +44,7 @@ class Algorithm:
 
     @lazy_property
     def cut(self):
-        F_C = tf.ones_like(self.F) - self.F
-        return tf.matmul(tf.transpose(F_C), tf.matmul(self.W, self.F))
+        return tf.matmul(tf.transpose(self.F), tf.matmul(self.W, self.F))
 
     @lazy_property
     def apply_constraints(self):
@@ -94,5 +93,7 @@ if __name__ == '__main__':
         print('labels\n', labels)
         print('count\n ',count)
         print('cut\n', Cut)
+
+        # plot_G(G, coordinates, labels)
 
         print()
