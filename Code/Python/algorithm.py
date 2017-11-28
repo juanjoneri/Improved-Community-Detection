@@ -33,7 +33,7 @@ class Algorithm:
         cero, one, a = self.cero, self.one, self.a
         return tf.assign(self.H, tf.scalar_mul(a, tf.matmul(Op, self.H)) + tf.scalar_mul((one - a), F))
 
-    @property
+    @lazy_property
     def threshold(self):
         indices = tf.argmax(self.H, axis=1)
         return tf.assign(self.F, tf.squeeze(tf.one_hot(tf.cast(indices, tf.int32), self.R, dtype=tf.float64)))
@@ -77,21 +77,22 @@ if __name__ == '__main__':
         sess.run(tf.global_variables_initializer())
 
         ini_F = sess.run(algorithm.F)
-        print('Initial F', ini_F)
+        ini_L = sess.run(algorithm.labels)
+        print('Initial F\n', ini_F)
+        print('initial lables\n', ini_L)
 
-        current_H = sess.run(algorithm.diffuse)
-        print('current H', current_H)
-        current_F = sess.run(algorithm.F)
-        print('current F', current_F)
+        for i in range(10):
+            sess.run(algorithm.diffuse)
 
-        th = sess.run(algorithm.threshold)
-        end_F = sess.run(algorithm.F)
-        end_H = sess.run(algorithm.H)
-        print('th', th)
-        print('F after Th', end_F)
-        print('h after th', end_H)
+        sess.run(algorithm.threshold)
+        F = sess.run(algorithm.F)
+        Cut = sess.run(algorithm.cut)
+        print('new F\n', F)
 
-        constraint = sess.run(algorithm.apply_constraints)
-        print('constraints',constraint)
+        count = sess.run(algorithm.apply_constraints)
+        labels = sess.run(algorithm.labels)
+        print('labels\n', labels)
+        print('count\n ',count)
+        print('cut\n', Cut)
 
         print()
