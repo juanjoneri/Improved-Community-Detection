@@ -11,13 +11,13 @@ class Algorithm:
     one = tf.constant(1, dtype=tf.float64)
     cero = tf.constant(0, dtype=tf.float64)
 
-    def __init__(self, W, R, a):
+    def __init__(self, W, F, R, a):
         # Properties
-        self.W = tf.constant(W, dtype=tf.float64)          # Graph's adj matrix
-        self.n = int(self.W.get_shape()[1])                    # Number of vertexes
-        self.R = R                           # Target number of communities
-        self.F = self.random_partition()                   # Current partition: initialized random
-        self.H = tf.Variable(self.F)                       # Heat bump: initialized to F
+        self.W = W       # Graph's adj matrix
+        self.n = int(self.W.get_shape()[1])                # Number of vertexes
+        self.R = R                                         # Target number of communities
+        self.F = F                                         # Current partition: initialized random
+        self.H = tf.Variable(F.initialized_value())                                         # Heat bump: initialized to F
 
         # Operators
         self.a = tf.constant(a, dtype=tf.float64)          # Alpha: diffusion parameter
@@ -31,14 +31,12 @@ class Algorithm:
         W, F = self.W, self.F
         Op = self._Op
         cero, one, a = self.cero, self.one, self.a
-        self.H = tf.assign(self.H, tf.scalar_mul(a, tf.matmul(Op, self.H)) + tf.scalar_mul((one - a), F))
-        return self.H
+        return tf.assign(self.H, tf.scalar_mul(a, tf.matmul(Op, self.H)) + tf.scalar_mul((one - a), F))
 
-    @lazy_property
+    @property
     def threshold(self):
         indices = tf.argmax(self.H, axis=1)
-        self.F = tf.squeeze(tf.one_hot(tf.cast(indices, tf.int32), self.R, dtype=tf.float64))
-        return self.F
+        return tf.assign(self.F, tf.squeeze(tf.one_hot(tf.cast(indices, tf.int32), self.R, dtype=tf.float64)))
 
     @lazy_property
     def labels(self):
@@ -49,9 +47,13 @@ class Algorithm:
         F_C = tf.ones_like(self.F) - self.F
         return tf.matmul(tf.transpose(F_C), tf.matmul(self.W, self.F))
 
-    def random_partition(self):
-        indices = tf.random_uniform([1,self.n], minval=0, maxval=self.R)
-        return tf.squeeze(tf.one_hot(tf.cast(indices, tf.int32), self.R, dtype=tf.float64))
+    @lazy_property
+    def apply_constraints(self):
+        return tf.count_nonzero(self.F, 0)
+
+def random_partition(n, R):
+    indices = tf.random_uniform([1,n], minval=0, maxval=R)
+    return tf.Variable(tf.squeeze(tf.one_hot(tf.cast(indices, tf.int32), R, dtype=tf.float64)))
 
 if __name__ == '__main__':
     import os
@@ -64,26 +66,32 @@ if __name__ == '__main__':
     n_clusters = small_R
 
     graph_W = tf.constant(small_W, dtype=tf.float64)
+    graph_F = random_partition(20, 2)
     alpha = 0.9
     R = 2
 
-    algorithm = Algorithm(small_W, R, alpha)
+    algorithm = Algorithm(graph_W, graph_F, R, alpha)
 
     # make sure the session is closed
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
 
-        ini_cut = sess.run(algorithm.cut)
-        print('Initial cut', ini_cut)
+        ini_F = sess.run(algorithm.F)
+        print('Initial F', ini_F)
 
-        for i in range(10):
-            for _ in range(20):
-                sess.run(algorithm.diffuse)
-            current_F = sess.run(algorithm.threshold)
-            current_Labels = sess.run(algorithm.labels)
-            current_cut = sess.run(algorithm.cut)
-            print('step', i, current_Labels, '\n' , current_cut)
-            plot_G(G, coordinates, current_Labels)
-            print()
+        current_H = sess.run(algorithm.diffuse)
+        print('current H', current_H)
+        current_F = sess.run(algorithm.F)
+        print('current F', current_F)
 
-        print(labels_true)
+        th = sess.run(algorithm.threshold)
+        end_F = sess.run(algorithm.F)
+        end_H = sess.run(algorithm.H)
+        print('th', th)
+        print('F after Th', end_F)
+        print('h after th', end_H)
+
+        constraint = sess.run(algorithm.apply_constraints)
+        print('constraints',constraint)
+
+        print()
