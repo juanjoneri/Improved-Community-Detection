@@ -76,24 +76,28 @@ if __name__ == '__main__':
         sess.run(tf.global_variables_initializer())
 
         ini_F = sess.run(algorithm.F)
-        ini_L = sess.run(algorithm.labels)
+        ini_S = sess.run(algorithm.apply_constraints)
         print('Initial F\n', ini_F)
-        print('initial lables\n', ini_L)
+        print('Initial sizes\n', ini_S)
 
-        for i in range(10):
-            sess.run(algorithm.diffuse)
+        for i in range(5):
+            print('\n# Diffusion pass {}\n'.format(i+1))
+            for _ in range(10):
+                sess.run(algorithm.diffuse)
 
-        sess.run(algorithm.threshold)
-        F = sess.run(algorithm.F)
-        Cut = sess.run(algorithm.cut)
-        print('new F\n', F)
+            H = sess.run(algorithm.H)
+            print('new H\n', H)
+            sess.run(algorithm.threshold)
+            F = sess.run(algorithm.F)
+            print('new F\n', F)
 
+        print('\n# Finally\n')
         count = sess.run(algorithm.apply_constraints)
         labels = sess.run(algorithm.labels)
         print('labels\n', labels)
         print('count\n ',count)
-        print('cut\n', Cut)
 
-        # plot_G(G, coordinates, labels)
+        print('\n# Actual Labels')
+        print(labels_true.astype(int))
 
         print()
