@@ -12,25 +12,22 @@ class Algorithm:
     cero = tf.constant(0, dtype=tf.float64)
 
     def __init__(self, W, F, R, a):
-        # Properties
         self.W = W                                         # Graph's adj matrix
         self.n = int(self.W.get_shape()[1])                # Number of vertexes
         self.R = R                                         # Target number of communities
         self.F = F                                         # Current partition: initialized random
         self.H = tf.Variable(F.initialized_value())        # Heat bump: initialized to F
-
-        # Operators
         self.a = tf.constant(a, dtype=tf.float64)          # Alpha: diffusion parameter
-        self.I = tf.eye(self.n)                            # Identity matrix
-        self.D = tf.diag(tf.reduce_sum(self.W, 0))         # Degree Matrix of W
-        D_ = tf.diag((tf.pow(tf.diag_part(self.D), -0.5))) # D^(-1/2)
-        self._Op = tf.matmul(D_, tf.matmul(self.W, D_))    # D^(-1/2) W D^(-1/2)
 
     @define_scope
     def diffuse(self):
-        W, F = self.W, self.F
-        Op = self._Op
         cero, one, a = self.cero, self.one, self.a
+        W, F, n = self.W, self.F, self.n
+        # Preliminary operations, only cimputed once thanks to decorator (note it is indep of step)
+        I = tf.eye(n, name='Identity')
+        D = tf.diag(tf.reduce_sum(W, 0), name='Degree')
+        D_ = tf.diag((tf.pow(tf.diag_part(D), -0.5)), name='D_pow')
+        Op = tf.matmul(D_, tf.matmul(W, D_), name='W_D_pow_W')
         return tf.assign(self.H, tf.scalar_mul(a, tf.matmul(Op, self.H)) + tf.scalar_mul((one - a), F))
 
     @define_scope
@@ -54,24 +51,7 @@ def random_partition(n, R):
     indices = tf.random_uniform([1,n], minval=0, maxval=R)
     return tf.Variable(tf.squeeze(tf.one_hot(tf.cast(indices, tf.int32), R, dtype=tf.float64)))
 
-if __name__ == '__main__':
-    import os
-    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-
-    G, coordinates, labels_true = import_example('small')
-    small_W, small_R = nx_np(G)
-
-    n_nodes = 20
-    n_clusters = small_R
-
-    graph_W = tf.constant(small_W, dtype=tf.float64)
-    graph_F = random_partition(20, 2)
-    alpha = 0.9
-    R = 2
-
-    algorithm = Algorithm(graph_W, graph_F, R, alpha)
-
-    # make sure the session is closed
+def test(G, coordinates, algorithm, plot=False):
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
 
@@ -90,6 +70,9 @@ if __name__ == '__main__':
             sess.run(algorithm.threshold)
             F = sess.run(algorithm.F)
             print('new F\n', F)
+            if plot:
+                current_labels = sess.run(algorithm.labels)
+                plot_G(G, coordinates, current_labels)
 
         print('\n# Finally\n')
         count = sess.run(algorithm.apply_constraints)
@@ -100,4 +83,20 @@ if __name__ == '__main__':
         print('\n# Actual Labels')
         print(labels_true.astype(int))
 
-        print()
+if __name__ == '__main__':
+    import os
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+    G, coordinates, labels_true = import_example('small')
+    small_W, small_R = nx_np(G)
+
+    n_nodes = 20
+    n_clusters = small_R
+
+    graph_W = tf.constant(small_W, dtype=tf.float64)
+    graph_F = random_partition(20, 2)
+    alpha = 0.9
+    R = 2
+
+    algorithm = Algorithm(graph_W, graph_F, R, alpha)
+    test(G, coordinates, algorithm, plot=False)
