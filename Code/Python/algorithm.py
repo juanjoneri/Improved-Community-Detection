@@ -1,4 +1,4 @@
-from my_packages.model.decorators import lazy_property
+from my_packages.model.decorators import define_scope
 from my_packages.clusters.save_cluster import import_example
 from my_packages.clusters.plot_cluster import plot_G
 from my_packages.clusters.nx_np import nx_np
@@ -13,11 +13,11 @@ class Algorithm:
 
     def __init__(self, W, F, R, a):
         # Properties
-        self.W = W       # Graph's adj matrix
+        self.W = W                                         # Graph's adj matrix
         self.n = int(self.W.get_shape()[1])                # Number of vertexes
         self.R = R                                         # Target number of communities
         self.F = F                                         # Current partition: initialized random
-        self.H = tf.Variable(F.initialized_value())                                         # Heat bump: initialized to F
+        self.H = tf.Variable(F.initialized_value())        # Heat bump: initialized to F
 
         # Operators
         self.a = tf.constant(a, dtype=tf.float64)          # Alpha: diffusion parameter
@@ -26,27 +26,27 @@ class Algorithm:
         D_ = tf.diag((tf.pow(tf.diag_part(self.D), -0.5))) # D^(-1/2)
         self._Op = tf.matmul(D_, tf.matmul(self.W, D_))    # D^(-1/2) W D^(-1/2)
 
-    @lazy_property
+    @define_scope
     def diffuse(self):
         W, F = self.W, self.F
         Op = self._Op
         cero, one, a = self.cero, self.one, self.a
         return tf.assign(self.H, tf.scalar_mul(a, tf.matmul(Op, self.H)) + tf.scalar_mul((one - a), F))
 
-    @lazy_property
+    @define_scope
     def threshold(self):
         indices = tf.argmax(self.H, axis=1)
         return tf.assign(self.F, tf.squeeze(tf.one_hot(tf.cast(indices, tf.int32), self.R, dtype=tf.float64)))
 
-    @lazy_property
+    @define_scope
     def labels(self):
         return tf.argmax(self.F, axis=1)
 
-    @lazy_property
+    @define_scope
     def cut(self):
         return tf.matmul(tf.transpose(self.F), tf.matmul(self.W, self.F))
 
-    @lazy_property
+    @define_scope
     def apply_constraints(self):
         return tf.count_nonzero(self.F, 0)
 
