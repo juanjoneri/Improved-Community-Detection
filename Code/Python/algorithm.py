@@ -22,13 +22,13 @@ class Algorithm:
     @define_scope
     def diffuse(self):
         cero, one, a = self.cero, self.one, self.a
-        W, F, n = self.W, self.F, self.n
+        W, n = self.W, self.n
         # Preliminary operations, only cimputed once thanks to decorator (note it is indep of step)
         I = tf.eye(n, name='Identity')
         D = tf.diag(tf.reduce_sum(W, 0), name='Degree')
         D_ = tf.diag((tf.pow(tf.diag_part(D), -0.5)), name='D_pow')
         Op = tf.matmul(D_, tf.matmul(W, D_), name='W_D_pow_W')
-        return tf.assign(self.H, tf.scalar_mul(a, tf.matmul(Op, self.H)) + tf.scalar_mul((one - a), F))
+        return tf.assign(self.H, tf.scalar_mul(a, tf.matmul(Op, self.H)) + tf.scalar_mul((one - a), self.F))
 
     @define_scope
     def threshold(self):
@@ -91,12 +91,12 @@ if __name__ == '__main__':
     small_W, small_R = nx_np(G)
 
     n_nodes = 20
-    n_clusters = small_R
+    n_clusters = 2
 
     graph_W = tf.constant(small_W, dtype=tf.float64)
-    graph_F = random_partition(20, 2)
+    graph_F = random_partition(n_nodes, n_clusters)
     alpha = 0.9
-    R = 2
+    R = n_clusters
 
     algorithm = Algorithm(graph_W, graph_F, R, alpha)
     test(G, coordinates, algorithm, plot=False)
