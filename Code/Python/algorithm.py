@@ -18,6 +18,10 @@ class Algorithm:
         self.F = F                                         # Current partition: initialized random
         self.H = tf.Variable(F.initialized_value())        # Heat bump: initialized to F
         self.a = tf.constant(a, dtype=tf.float64)          # Alpha: diffusion parameter
+        self.max = 10
+
+        self.diffuse
+        self.threshold
 
     @define_scope
     def diffuse(self):
@@ -45,7 +49,7 @@ class Algorithm:
 
     @define_scope
     def apply_constraints(self):
-        return tf.count_nonzero(self.F, 0)
+        return tf.nn.top_k(tf.transpose(self.H), self.max)
 
 def random_partition(n, R):
     indices = tf.random_uniform([1,n], minval=0, maxval=R)
@@ -83,6 +87,20 @@ def test(G, coordinates, algorithm, plot=False):
         print('\n# Actual Labels')
         print(labels_true.astype(int))
 
+def my_tests(algorithm):
+    with tf.Session() as sess:
+        sess.run(tf.global_variables_initializer())
+        F = sess.run(algorithm.F)
+        sess.run(algorithm.diffuse)
+        H = sess.run(algorithm.H)
+        sess.run(algorithm.threshold)
+        L = sess.run(algorithm.apply_constraints)
+        print(F)
+        print()
+        print(H)
+        print()
+        print(L)
+
 if __name__ == '__main__':
     import os
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
@@ -99,4 +117,5 @@ if __name__ == '__main__':
     R = n_clusters
 
     algorithm = Algorithm(graph_W, graph_F, R, alpha)
-    test(G, coordinates, algorithm, plot=False)
+    # test(G, coordinates, algorithm, plot=False)
+    my_tests(algorithm)
