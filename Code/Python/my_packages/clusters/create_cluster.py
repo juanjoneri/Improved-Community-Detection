@@ -124,7 +124,7 @@ if __name__ == '__main__':
         sys.exit()
     centers = [(c[i], c[i+1]) for i in range(0, len(c), 2)]
     d = avg_center_distance(centers)
-    G, coordinates, labels = create_cluster(n_nodes, centers, std=d/4.5, k=d/2.5)
+    G, coordinates, labels = create_cluster(n_nodes, centers, std=d/5, k=d/2.5)
 
     plot_G(G, coordinates, labels)
     plot_G(G, coordinates)
