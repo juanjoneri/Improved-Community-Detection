@@ -9,7 +9,7 @@ Use this module for saving and retreiving graphs, its connections, coordinates a
 '''
 
 script_dir = os.path.dirname(__file__)
-examples = {'small':'examples/20-2/20n-2c-' , 'medium': 'examples/80-3/80n-3c-', 'big': None}
+examples = {'small':'examples/20-2/20n-2c-' , 'medium': 'examples/80-3/80n-3c-', 'big': 'examples/120-4/120n-4c-'}
 
 def export_cluster(G, file_name):
     '''

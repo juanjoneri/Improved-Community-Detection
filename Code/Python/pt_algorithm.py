@@ -30,8 +30,8 @@ class Algorithm:
         allocated = set() # Track allocated nodes
         nodes_per_class = dict(zip(range(self.R), [0]*self.R)) # Track full classes
 
-        ranks = torch.topk(self.H, self.n, dim=0)[1]
-        new_F = torch.zeros(n_nodes, n_clusters)
+        ranks = torch.topk(self.H, self.n, dim=0)[1] # Order classes by heat score
+        self.F = torch.zeros(n_nodes, n_clusters) # Reset the partition
 
         i = 0
         for rank in ranks:
@@ -40,14 +40,9 @@ class Algorithm:
                 if node not in allocated and nodes_per_class[j] < seeds:
                     allocated.add(node)
                     nodes_per_class[j] += 1
-                    new_F[node][j] = 1
+                    self.F[node][j] = 1
                 j += 1
             i += 1
-
-        print(ranks)
-        print(allocated)
-        print(new_F)
-
 
     def labels(self):
         # Return a vector with labels for each class (only makes sense when F represents a partition)
@@ -55,19 +50,22 @@ class Algorithm:
 
 
 if __name__ == '__main__':
-    G, coordinates, labels_true = import_example('small')
+    G, coordinates, labels_true = import_example('big')
     small_W, small_R = nx_np(G)
 
-    n_nodes = 20
-    n_clusters = 2
+    n_nodes = 120
+    n_clusters = 4
 
     graph_W = torch.from_numpy(small_W)
     initial_F = torch.zeros(n_nodes, n_clusters)
-    initial_F[1][0] = 1
-    initial_F[9][1] = 1
+    initial_F[4][0] = 1
+    initial_F[21][1] = 1
+    initial_F[5][2] = 1
+    initial_F[10][3] = 1
 
     algorithm = Algorithm(graph_W, initial_F, R=n_clusters, a=0.9)
     algorithm.diffuse(10)
 
-    print(algorithm.reseed(6))
+    algorithm.reseed(10)
+    print(algorithm.F)
     plot_G(G, coordinates)
