@@ -5,3 +5,4 @@ Code/*.asv
 /Code/Python/__pycache__/
 *.pyc
 out.txt
+.idea
