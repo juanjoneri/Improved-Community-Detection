@@ -44,9 +44,10 @@ class Algorithm:
                 j += 1
             i += 1
 
+    @property
     def labels(self):
         # Return a vector with labels for each class (only makes sense when F represents a partition)
-        pass
+        return torch.max(self.F, dim=1)[1]
 
 
 if __name__ == '__main__':
@@ -66,6 +67,7 @@ if __name__ == '__main__':
     algorithm = Algorithm(graph_W, initial_F, R=n_clusters, a=0.9)
     algorithm.diffuse(10)
 
-    algorithm.reseed(10)
-    print(algorithm.F)
+    algorithm.reseed(30)
+    print(labels_true)
+    print(algorithm.labels)
     plot_G(G, coordinates)
