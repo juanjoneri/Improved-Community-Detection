@@ -28,30 +28,30 @@ class Algorithm:
             self.H = torch.mul(self.a, torch.mm(Op, self.H)) + torch.mul((1 - self.a), self.F)
 
     def rank_threshold(self):
-        # Take the k (`seeds`) best seeds from each heat bump specified by H
-        allocated = set() # Track allocated nodes
-        nodes_per_class = dict(zip(range(self.R), [0]*self.R)) # Track full classes
+        '''
+        Oder the nodes by "temperature" for each class in an NxR rank vecotr, try to allocate each class their top choice
+        by looping through the rank vector and allocating the nodes to each class if not already allocated or the class is full
+        (each row in the rank vector is iterated randomly to not be bias to any class)
+        '''
+        allocated = set() # Track allocated nodes (nodes can only belong to one class)
         max_nodes_per_class = self.constraints[1]
+        nodes_per_class = dict(zip(range(self.R), [0]*self.R)) # Mantain a size constraint
 
         ranks = torch.topk(self.H, self.n, dim=0)[1] # Order classes by heat score
-        # self.F = torch.zeros(n_nodes, n_clusters) # Reset the partition
 
-        i = 0
-        for rank in ranks: # 1st places, 2nd places ... Rth places
-            # Give class' rth choice to a random class, unless nodes is alocated or class full
+        for rank in ranks: # 1st, 2nd ... Rth places
             class_order = np.arange(self.R)
-            np.random.shuffle(class_order) # pytorch has no shuffle
-            for class_index in class_order:
+            np.random.shuffle(class_order)
+            for class_index in class_order: # class 2, 9, ... randomly
                 node = rank[class_index]
                 if node not in allocated and nodes_per_class[class_index] <= max_nodes_per_class:
+                    self.F[node][class_index] = 1
                     allocated.add(node)
                     nodes_per_class[class_index] += 1
-                    self.F[node][class_index] = 1
-            i += 1
 
     @property
     def labels(self):
-        # Return a vector with labels for each class (only makes sense when F represents a partition)
+        # Return a vector with labels for each class as specified by the current Indicator matrix F
         return torch.max(self.F, dim=1)[1]
 
 
