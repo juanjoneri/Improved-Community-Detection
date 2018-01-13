@@ -6,16 +6,17 @@ from my_packages.clusters.nx_np import nx_np
 
 class Algorithm:
 
-    def __init__(self, W, F, R, a):
+    def __init__(self, W, F, R, a, constraints):
         self.W = W                      # Graph's adj matrix
         self.R = R                      # Target number of communities
         self.F = F                      # Indicator of current partition
+        self.constraints = constraints  # (min, max) tuple with constraints for sizes of partition
 
         self.D = torch.sum(self.W, 0)   # Degree vector(connections per node)
         self.H = F.clone()              # Heat bump: initialized to F
 
         self.n = self.W.size()[0]       # Number of vertexes
-        self.a = torch.FloatTensor([a])   # Alpha: diffusion parameter
+        self.a = torch.FloatTensor([a]) # Alpha: diffusion parameter
 
     def diffuse(self, iterations):
         # Apply one diffuse step to the current heat distribution H
@@ -25,19 +26,20 @@ class Algorithm:
         for _ in range(iterations):
             self.H = torch.mul(self.a, torch.mm(Op, self.H)) + torch.mul((1 - self.a), self.F)
 
-    def reseed(self, seeds):
+    def rank_threshold(self):
         # Take the k (`seeds`) best seeds from each heat bump specified by H
         allocated = set() # Track allocated nodes
         nodes_per_class = dict(zip(range(self.R), [0]*self.R)) # Track full classes
+        max_nodes_per_class = self.constraints[1]
 
         ranks = torch.topk(self.H, self.n, dim=0)[1] # Order classes by heat score
-        self.F = torch.zeros(n_nodes, n_clusters) # Reset the partition
+        # self.F = torch.zeros(n_nodes, n_clusters) # Reset the partition
 
         i = 0
         for rank in ranks:
             j = 0
             for node in rank:
-                if node not in allocated and nodes_per_class[j] < seeds:
+                if node not in allocated and nodes_per_class[j] <= max_nodes_per_class:
                     allocated.add(node)
                     nodes_per_class[j] += 1
                     self.F[node][j] = 1
@@ -64,10 +66,10 @@ if __name__ == '__main__':
     initial_F[5][2] = 1
     initial_F[10][3] = 1
 
-    algorithm = Algorithm(graph_W, initial_F, R=n_clusters, a=0.9)
+    algorithm = Algorithm(W=graph_W, F=initial_F, R=n_clusters, a=0.9, constraints=(25, 35))
     algorithm.diffuse(10)
 
-    algorithm.reseed(30)
+    algorithm.rank_threshold()
     print(labels_true)
     print(algorithm.labels)
-    plot_G(G, coordinates)
+    plot_G(G, coordinates, algorithm.labels)
