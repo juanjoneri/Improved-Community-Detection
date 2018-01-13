@@ -49,6 +49,26 @@ class Algorithm:
                     allocated.add(node)
                     nodes_per_class[class_index] += 1
 
+    def reseed(self, seed_count):
+        '''
+        Select seed_count many seeds for each partition at random.
+        Should only be applied after thresholding
+        '''
+        if seed_count > self.n / self.R:
+            raise Exception('Too many seeds')
+
+        nodes_per_class = dict(zip(range(self.R), [0]*self.R))
+        node_order = np.arange(self.n)
+        np.random.shuffle(node_order)
+        new_F = torch.zeros(self.n, self.R) # Reset the partition
+        for node_index in node_order:
+            node_class = int(torch.nonzero(self.F[node_index])) # only has one element, the index of the nonzero element
+            if nodes_per_class[node_class] < seed_count:
+                nodes_per_class[node_class] += 1
+                new_F[node_index][node_class] = 1
+        self.F = new_F
+
+
     @property
     def labels(self):
         # Return a vector with labels for each class as specified by the current Indicator matrix F
@@ -73,4 +93,6 @@ if __name__ == '__main__':
     algorithm.diffuse(10)
 
     algorithm.rank_threshold()
+    plot_G(G, coordinates, algorithm.labels)
+    algorithm.reseed(3)
     plot_G(G, coordinates, algorithm.labels)
