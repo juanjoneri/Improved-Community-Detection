@@ -1,4 +1,5 @@
 import torch
+import numpy as np
 
 from my_packages.clusters.save_cluster import import_example
 from my_packages.clusters.plot_cluster import plot_G
@@ -36,14 +37,16 @@ class Algorithm:
         # self.F = torch.zeros(n_nodes, n_clusters) # Reset the partition
 
         i = 0
-        for rank in ranks:
-            j = 0
-            for node in rank:
-                if node not in allocated and nodes_per_class[j] <= max_nodes_per_class:
+        for rank in ranks: # 1st places, 2nd places ... Rth places
+            # Give class' rth choice to a random class, unless nodes is alocated or class full
+            class_order = np.arange(self.R)
+            np.random.shuffle(class_order) # pytorch has no shuffle
+            for class_index in class_order:
+                node = rank[class_index]
+                if node not in allocated and nodes_per_class[class_index] <= max_nodes_per_class:
                     allocated.add(node)
-                    nodes_per_class[j] += 1
-                    self.F[node][j] = 1
-                j += 1
+                    nodes_per_class[class_index] += 1
+                    self.F[node][class_index] = 1
             i += 1
 
     @property
@@ -61,15 +64,13 @@ if __name__ == '__main__':
 
     graph_W = torch.from_numpy(small_W)
     initial_F = torch.zeros(n_nodes, n_clusters)
-    initial_F[4][0] = 1
-    initial_F[21][1] = 1
-    initial_F[5][2] = 1
-    initial_F[10][3] = 1
+    initial_F[1][0] = 1
+    initial_F[2][1] = 1
+    initial_F[3][2] = 1
+    initial_F[4][3] = 1
 
     algorithm = Algorithm(W=graph_W, F=initial_F, R=n_clusters, a=0.9, constraints=(25, 35))
     algorithm.diffuse(10)
 
     algorithm.rank_threshold()
-    print(labels_true)
-    print(algorithm.labels)
     plot_G(G, coordinates, algorithm.labels)
