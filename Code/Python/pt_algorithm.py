@@ -91,7 +91,7 @@ class Algorithm:
                 new_F[node_index][node_class] = 1
         self.F = new_F
 
-    def error(self, labels_true):
+    def accuracy(self, labels_true):
         return (self.n - torch.nonzero(self.labels - labels_true).size()[0])/self.n
 
 
@@ -124,6 +124,6 @@ if __name__ == '__main__':
     algorithm.diffuse(30)
     algorithm.rank_threshold()
 
-    print(algorithm.error(torch.from_numpy(labels_true)))
+    print(algorithm.accuracy(torch.from_numpy(labels_true)))
     plot_G(G, coordinates, algorithm.labels)
     # plot_G(G, coordinates, labels_true)
