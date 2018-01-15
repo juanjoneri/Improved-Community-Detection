@@ -21,6 +21,7 @@ class Algorithm:
 
     def diffuse(self, iterations):
         # Apply one diffuse step to the current heat distribution H
+        self.H = self.F.clone()
         I = torch.eye(self.n)
         D_ = torch.diag(torch.pow(self.D, -0.5))
         Op = torch.mm(D_, torch.mm(self.W, D_)).type(torch.FloatTensor)
@@ -48,6 +49,22 @@ class Algorithm:
                     self.F[node][class_index] = 1
                     allocated.add(node)
                     nodes_per_class[class_index] += 1
+
+    def random_threshold(self):
+        nodes_per_class = dict(zip(range(self.R), [0]*self.R)) # Mantain a size constraint
+        max_nodes_per_class = self.constraints[1]
+
+        node_order = np.arange(self.n)
+        np.random.shuffle(node_order)
+        for node_index in node_order:
+            node_heat = self.H[node_index]
+            node_ranks = torch.topk(node_heat, self.R, dim=0)[1] # Order classes by heat score
+            for class_choice in node_ranks:
+                if nodes_per_class[class_choice] <= max_nodes_per_class:
+                    self.F[node_index][class_choice] = 1
+                    nodes_per_class[class_choice] += 1
+                    break
+
 
     def reseed(self, seed_count):
         '''
@@ -85,14 +102,14 @@ if __name__ == '__main__':
     graph_W = torch.from_numpy(small_W)
     initial_F = torch.zeros(n_nodes, n_clusters)
     initial_F[1][0] = 1
-    initial_F[2][1] = 1
-    initial_F[3][2] = 1
-    initial_F[4][3] = 1
+    initial_F[23][1] = 1
+    initial_F[13][2] = 1
+    initial_F[41][3] = 1
 
     algorithm = Algorithm(W=graph_W, F=initial_F, R=n_clusters, a=0.9, constraints=(25, 35))
+    print(labels_true)
     algorithm.diffuse(10)
-
-    algorithm.rank_threshold()
+    algorithm.random_threshold()
     plot_G(G, coordinates, algorithm.labels)
-    algorithm.reseed(3)
-    plot_G(G, coordinates, algorithm.labels)
+    # algorithm.reseed(3)
+    # plot_G(G, coordinates, algorithm.labels)

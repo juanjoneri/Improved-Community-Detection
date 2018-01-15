@@ -110,43 +110,43 @@ def create_moons(n_noes, noise, k):
     coordinates = dict(list(enumerate(map(tuple, nodes)))) # a dict that maps to the cooordinates of each node, for plotting
     return G, coordinates, labels
 
-# if __name__ == '__main__':
-#     '''
-#     Sample call
-#     python3 create_cluster 90 ((0,0)(0,1)(1,0))
-#     '''
-#     import sys
-#     import re
-#     from save_cluster import export_cluster, export_metadata
-#     from plot_cluster import plot_G
-#
-#     float_pat = r'([-+]?[0-9]+\.?[0-9]*)'
-#     instructions = 'try: python3 create_cluster 90 ((-1.0, 0.98)(-40, 13)(10.33, 0))'
-#
-#     if len(sys.argv) < 2:
-#         print(instructions)
-#         sys.exit()
-#
-#     n_nodes = int(sys.argv[1])
-#     c = list(map(float, re.findall(float_pat, sys.argv[2])))
-#     if n_nodes < 2 or len(c) % 2 != 0:
-#         print(instructions)
-#         sys.exit()
-#     centers = [(c[i], c[i+1]) for i in range(0, len(c), 2)]
-#     d = avg_center_distance(centers)
-#     G, coordinates, labels = create_cluster(n_nodes, centers, std=d/4.9, k=d/5)
-#
-#     plot_G(G, coordinates, labels)
-#     plot_G(G, coordinates)
-#     export_cluster(G, '{}n-{}c'.format(n_nodes, len(centers)))
-#     export_metadata(coordinates, labels, '{}n-{}c'.format(n_nodes, len(centers)))
-
 if __name__ == '__main__':
+    '''
+    Sample call
+    python3 create_cluster 90 ((0,0)(0,1)(1,0))
+    '''
+    import sys
+    import re
     from save_cluster import export_cluster, export_metadata
     from plot_cluster import plot_G
-    n_nodes = 1200
-    G, coordinates, labels = create_moons(n_nodes, .16, .2)
+
+    float_pat = r'([-+]?[0-9]+\.?[0-9]*)'
+    instructions = 'try: python3 create_cluster 90 ((-1.0, 0.98)(-40, 13)(10.33, 0))'
+
+    if len(sys.argv) < 2:
+        print(instructions)
+        sys.exit()
+
+    n_nodes = int(sys.argv[1])
+    c = list(map(float, re.findall(float_pat, sys.argv[2])))
+    if n_nodes < 2 or len(c) % 2 != 0:
+        print(instructions)
+        sys.exit()
+    centers = [(c[i], c[i+1]) for i in range(0, len(c), 2)]
+    d = avg_center_distance(centers)
+    G, coordinates, labels = create_cluster(n_nodes, centers, std=d/3.9, k=d/2 )
+
     plot_G(G, coordinates, labels)
     plot_G(G, coordinates)
-    export_cluster(G, 'hm-{}n'.format(n_nodes))
-    export_metadata(coordinates, labels, 'hm-{}n'.format(n_nodes))
+    export_cluster(G, '{}n-{}c'.format(n_nodes, len(centers)))
+    export_metadata(coordinates, labels, '{}n-{}c'.format(n_nodes, len(centers)))
+
+# if __name__ == '__main__':
+#     from save_cluster import export_cluster, export_metadata
+#     from plot_cluster import plot_G
+#     n_nodes = 1200
+#     G, coordinates, labels = create_moons(n_nodes, .16, .2)
+#     plot_G(G, coordinates, labels)
+#     plot_G(G, coordinates)
+#     export_cluster(G, 'hm-{}n'.format(n_nodes))
+#     export_metadata(coordinates, labels, 'hm-{}n'.format(n_nodes))
