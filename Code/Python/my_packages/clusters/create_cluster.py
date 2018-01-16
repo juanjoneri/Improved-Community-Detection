@@ -5,6 +5,8 @@ from sklearn.preprocessing import StandardScaler
 import networkx as nx
 import csv
 
+# http://scikit-learn.org/stable/auto_examples/cluster/plot_cluster_comparison.html#sphx-glr-auto-examples-cluster-plot-cluster-comparison-py
+
 def init_nodes(n_nodes, centers, std):
     """
     Creates n nodes from a gaussian distribution arround the centers
