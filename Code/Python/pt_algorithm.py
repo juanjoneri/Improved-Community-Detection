@@ -132,12 +132,20 @@ if __name__ == '__main__':
 
     algorithm = Algorithm(W=graph_W, R=n_clusters, a=0.99, constraints=(27, 33))
 
+    plot_G(G, coordinates, algorithm.C)
+    algorithm.reseed(1)
+    plot_G(G, coordinates, algorithm.C)
 
-    for seed_count in range(15):
+    for seed_count in range(1, 15, 2):
         algorithm.diffuse(30)
         algorithm.random_threshold()
+        plot_G(G, coordinates, algorithm.C)
         algorithm.reseed(seed_count)
         plot_G(G, coordinates, algorithm.C)
+
+    algorithm.diffuse(30)
+    algorithm.random_threshold()
+    plot_G(G, coordinates, algorithm.C)
 
     #
     # print(algorithm.accuracy(torch.from_numpy(labels_true)))
