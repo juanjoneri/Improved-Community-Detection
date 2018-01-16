@@ -21,7 +21,7 @@ class Algorithm:
         self.a = torch.FloatTensor([a]) # Alpha: diffusion parameter
 
     def C_F(self):
-        i = torch.cat((self.C, torch.arange(self.n).type(torch.LongTensor)), 0).view(2, self.n) #2D tensor with coordinates of values
+        i = torch.cat((torch.arange(self.n).type(torch.LongTensor), self.C,), 0).view(2, self.n) #2D tensor with coordinates of values
         v = torch.ones(self.n) # 1D tesnor with values
         return torch.sparse.FloatTensor(i, v)
 
@@ -127,7 +127,7 @@ if __name__ == '__main__':
 
     algorithm = Algorithm(W=graph_W, R=n_clusters, a=0.99, constraints=(25, 30))
     print(algorithm.C)
-    print(algorithm.F)
+    print(algorithm.F.to_dense())
 
     # for seeds in range(1, 30, 1):
     #     algorithm.diffuse(30)
