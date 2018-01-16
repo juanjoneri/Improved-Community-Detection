@@ -121,30 +121,30 @@ class Algorithm:
 
 if __name__ == '__main__':
 
-    G = import_cluster("my_packages/clusters/examples/120-4/120n-4c-cluster.csv")
-    coordinates, labels_true = import_metadata("my_packages/clusters/examples/120-4/120n-4c-meta.csv")
+    G = import_cluster("my_packages/clusters/examples/hm-200/hm-200n-cluster.csv")
+    coordinates, labels_true = import_metadata("my_packages/clusters/examples/hm-200/hm-200n-meta.csv")
     small_W, small_R = nx_np(G)
 
-    n_nodes = 120
-    n_clusters = 4
+    n_nodes = 200
+    n_clusters = 2
 
     graph_W = torch.from_numpy(small_W)
 
-    algorithm = Algorithm(W=graph_W, R=n_clusters, a=0.99, constraints=(27, 33))
+    algorithm = Algorithm(W=graph_W, R=n_clusters, a=0.99, constraints=(90, 105))
 
     plot_G(G, coordinates, algorithm.C)
     algorithm.reseed(1)
     plot_G(G, coordinates, algorithm.C)
 
-    for seed_count in range(1, 15, 2):
+    for seed_count in range(1, 20, 2):
         algorithm.diffuse(30)
-        algorithm.random_threshold()
+        algorithm.rank_threshold()
         plot_G(G, coordinates, algorithm.C)
         algorithm.reseed(seed_count)
         plot_G(G, coordinates, algorithm.C)
 
     algorithm.diffuse(30)
-    algorithm.random_threshold()
+    algorithm.rank_threshold()
     plot_G(G, coordinates, algorithm.C)
 
     #
