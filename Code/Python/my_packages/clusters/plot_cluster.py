@@ -10,7 +10,7 @@ https://networkx.github.io/documentation/stable/tutorial.html#nodes
 https://networkx.github.io/documentation/networkx-1.9/examples/drawing/weighted_graph.html
 '''
 
-def plot_G(G, coordinates=None, classes=[], continuous=False):
+def plot_G(G, coordinates=None, classes=[], continuous=False, file_name=""):
     '''
     # Inputs
     G: an nx graph to be plotted
@@ -33,20 +33,20 @@ def plot_G(G, coordinates=None, classes=[], continuous=False):
     fig = plt.figure()
     fig.add_subplot(1,1,1)
 
-    # title = 'Partition' if classes else 'Graph'
-    # plt.title(title)
-    #        x0, y0, w, h
     plt.axes([0, 0, 1, 1])
     nx.draw(G, coordinates, with_labels=True, node_color=colors)
-    plt.show()
+    if len(file_name) > 0:
+        plt.savefig("{}.png".format(file_name))
+    else:
+        plt.show()
 
-def save_G(G, file_name, plot_title='Graph'):
+def save_G(G, file_name, coordinates=None, classes=[], continuous=False):
     '''
     # Inputs
     file_name: the name of the image to hold the plot
     '''
     fig = plt.figure()
-    plt.title(plot_title)
+    # plt.title(plot_title)
     fig.add_subplot(1,1,1)
     plt.axes([0, 0, 1, 1])
     nx.draw(G, with_labels=True, font_weight='bold')

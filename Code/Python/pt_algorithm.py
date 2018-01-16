@@ -30,7 +30,7 @@ class Algorithm:
             if row.byte().any():
                 C[row_index] = torch.max(row, dim=0)[1]
             else:
-                C[row_index] = self.R
+                C[row_index] = 4 # default to white for unnalocated classes
         return C
 
     @staticmethod
@@ -121,31 +121,33 @@ class Algorithm:
 
 if __name__ == '__main__':
 
-    G = import_cluster("my_packages/clusters/examples/hm-200/hm-200n-cluster.csv")
-    coordinates, labels_true = import_metadata("my_packages/clusters/examples/hm-200/hm-200n-meta.csv")
+    G = import_cluster("my_packages/clusters/examples/hm-1200/hm-1200n-cluster.csv")
+    coordinates, labels_true = import_metadata("my_packages/clusters/examples/hm-1200/hm-1200n-meta.csv")
     small_W, small_R = nx_np(G)
 
-    n_nodes = 200
+    n_nodes = 1200
     n_clusters = 2
 
     graph_W = torch.from_numpy(small_W)
 
-    algorithm = Algorithm(W=graph_W, R=n_clusters, a=0.99, constraints=(90, 105))
+    algorithm = Algorithm(W=graph_W, R=n_clusters, a=0.99, constraints=(590, 610))
 
-    plot_G(G, coordinates, algorithm.C)
+    iteration = 1
+    plot_G(G, coordinates, algorithm.C, file_name="0A-random-partition")
     algorithm.reseed(1)
-    plot_G(G, coordinates, algorithm.C)
+    plot_G(G, coordinates, algorithm.C, file_name="0B-1-seed".format(iteration))
 
-    for seed_count in range(1, 20, 2):
+    for seed_count in range(2, 200, 10):
         algorithm.diffuse(30)
+        iteration += 1
         algorithm.rank_threshold()
-        plot_G(G, coordinates, algorithm.C)
+        plot_G(G, coordinates, algorithm.C, file_name="{}A-rank_threshold".format(iteration, seed_count))
         algorithm.reseed(seed_count)
-        plot_G(G, coordinates, algorithm.C)
+        plot_G(G, coordinates, algorithm.C, file_name="{}B-{}-seed".format(iteration, seed_count))
 
     algorithm.diffuse(30)
     algorithm.rank_threshold()
-    plot_G(G, coordinates, algorithm.C)
+    plot_G(G, coordinates, algorithm.C, file_name="final-partition")
 
     #
     # print(algorithm.accuracy(torch.from_numpy(labels_true)))
