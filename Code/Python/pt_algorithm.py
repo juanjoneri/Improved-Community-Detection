@@ -18,10 +18,20 @@ class Algorithm:
         self.D = torch.sum(self.W, 0)               # Degree vector(connections per node)
         self.H = self.F.clone()                     # Heat bump: initialized to F
 
+        if (self.n - (R-1)*constraints[1] < constraints[0]):
+            print("Alert: Not well defined constraints.")
+
     @property
     def C(self):
-        # Only makes sense if F represents a partition!
-        return torch.max(self.F, dim=1)[1].type(torch.DoubleTensor)
+        # vector with name of the classes, or R if not assigned
+        C = torch.zeros(self.n, 1)
+        for row_index in range(self.n):
+            row = self.F[row_index]
+            if row.byte().any():
+                C[row_index] = torch.max(row, dim=0)[1]
+            else:
+                C[row_index] = self.R
+        return C
 
     @staticmethod
     def random_partition(n, R):
@@ -120,25 +130,16 @@ if __name__ == '__main__':
 
     graph_W = torch.from_numpy(small_W)
 
-    algorithm = Algorithm(W=graph_W, R=n_clusters, a=0.99, constraints=(3, 5))
+    algorithm = Algorithm(W=graph_W, R=n_clusters, a=0.99, constraints=(3, 4))
 
-    # algorithm.diffuse(30)
-    # algorithm.reseed(2)
+
+
     algorithm.diffuse(30)
-    print(algorithm.H)
-    algorithm.rank_threshold()
+    algorithm.random_threshold()
     print(algorithm.C)
-    print(algorithm.F)
     algorithm.reseed(2)
     print(algorithm.F)
 
-
-    # for seeds in range(1, 30, 1):
-    #     algorithm.diffuse(30)
-    #     algorithm.random_threshold()
-    #     algorithm.reseed(seeds)
-    # algorithm.diffuse(30)
-    # algorithm.rank_threshold()
     #
     # print(algorithm.accuracy(torch.from_numpy(labels_true)))
     # plot_G(G, coordinates, algorithm.labels)
