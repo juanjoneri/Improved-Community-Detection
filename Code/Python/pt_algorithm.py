@@ -14,20 +14,21 @@ class Algorithm:
         self.constraints = constraints              # (min, max) tuple with constraints for sizes of partition
 
         self.n = self.W.size()[0]                   # Number of vertexes
-        self.C = self.random_partition(self.n, R)   # Initiate with a random partition
+        self.F = self.random_partition(self.n, R)   # Initiate with a random partition
         self.D = torch.sum(self.W, 0)               # Degree vector(connections per node)
         self.H = self.F.clone()                     # Heat bump: initialized to F
 
     @property
-    def F(self):
-        i = torch.cat((torch.arange(self.n).type(torch.LongTensor), self.C), 0).view(2, self.n) #2D tensor with coordinates of values
-        v = torch.ones(self.n) # 1D tesnor with values
-        return torch.sparse.FloatTensor(i, v).to_dense()
+    def C(self):
+        return torch.max(self.F, dim=1)[1].type(torch.DoubleTensor)
 
     @staticmethod
     def random_partition(n, R):
         # Creates a random partition with equal number of nodes in each class n/R
-        return torch.fmod(torch.randperm(n), R)
+        C = torch.fmod(torch.randperm(n), R)
+        i = torch.cat((torch.arange(n).type(torch.LongTensor), C), 0).view(2, n) #2D tensor with coordinates of values
+        v = torch.ones(n) # 1D tesnor with values
+        return torch.sparse.FloatTensor(i, v).to_dense()
 
     def diffuse(self, iterations):
         # Apply one diffuse step to the current heat distribution H
@@ -44,17 +45,19 @@ class Algorithm:
         (each row in the rank vector is iterated randomly to not be bias to any class)
         '''
         allocated = set() # Track allocated nodes (nodes can only belong to one class)
-        max_nodes_per_class = self.constraints[1]
         nodes_per_class = dict(zip(range(self.R), [0]*self.R)) # Mantain a size constraint
+        max_nodes_per_class = self.constraints[1]
 
         ranks = torch.topk(self.H, self.n, dim=0)[1] # Order classes by heat score
+        C = self.C.clone()
+        self.F = torch.zeros(self.n, self.R)
 
         for rank in ranks: # 1st, 2nd ... Rth places
-            class_order = torch.randperm(self.R)
+            class_order = torch.randperm(self.R).type(torch.LongTensor)
             for class_index in class_order: # class 2, 9, ... randomly
                 node = rank[class_index]
-                if node not in allocated and nodes_per_class[class_index] <= max_nodes_per_class:
-                    self.C[node] = class_index
+                if node not in allocated and nodes_per_class[class_index] < max_nodes_per_class:
+                    self.F[node][class_index] = 1
                     allocated.add(node)
                     nodes_per_class[class_index] += 1
 
@@ -63,14 +66,15 @@ class Algorithm:
     def random_threshold(self):
         nodes_per_class = dict(zip(range(self.R), [0]*self.R)) # Mantain a size constraint
         max_nodes_per_class = self.constraints[1]
+        self.F = torch.zeros(self.n, self.R)
 
         node_order = torch.randperm(self.n)
         for node_index in node_order:
             node_heat = self.H[node_index]
             node_ranks = torch.topk(node_heat, self.R, dim=0)[1] # Order classes by heat score
             for class_choice in node_ranks:
-                if nodes_per_class[class_choice] <= max_nodes_per_class:
-                    self.C[node_index] = class_choice
+                if nodes_per_class[class_choice] < max_nodes_per_class:
+                    self.F[node_index][class_choice] = 1
                     nodes_per_class[class_choice] += 1
                     break
 
@@ -88,12 +92,12 @@ class Algorithm:
         nodes_per_class = dict(zip(range(self.R), [0]*self.R))
         node_order = torch.randperm(self.n)
         for node_index in node_order:
-            node_class = int(torch.nonzero(self.F[node_index])) # only has one element, the index of the nonzero element
+            node_class = int(self.C[node_index]) # only has one element, the index of the nonzero element
             if nodes_per_class[node_class] < seed_count:
                 nodes_per_class[node_class] += 1
-                self.C[node_index] = node_class
+                self.F[node_index][node_class] = 1
             else:
-                self.C[node_index] = 0
+                self.F[node_index][node_class] = 0
 
         self.H = self.F.clone()
 
@@ -117,12 +121,14 @@ if __name__ == '__main__':
 
     algorithm = Algorithm(W=graph_W, R=n_clusters, a=0.99, constraints=(3, 5))
 
+    # algorithm.diffuse(30)
+    # algorithm.reseed(2)
     algorithm.diffuse(30)
-    algorithm.random_threshold()
-    algorithm.reseed(2)
     print(algorithm.H)
+    algorithm.rank_threshold()
     print(algorithm.C)
     print(algorithm.F)
+
 
     # for seeds in range(1, 30, 1):
     #     algorithm.diffuse(30)
