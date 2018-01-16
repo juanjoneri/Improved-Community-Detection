@@ -20,6 +20,7 @@ class Algorithm:
 
     @property
     def C(self):
+        # Only makes sense if F represents a partition!
         return torch.max(self.F, dim=1)[1].type(torch.DoubleTensor)
 
     @staticmethod
@@ -102,7 +103,7 @@ class Algorithm:
         self.H = self.F.clone()
 
     def purity(self, labels_true):
-        return (self.n - torch.nonzero(self.labels - labels_true).size()[0])/self.n
+        return (self.n - torch.nonzero(self.C - labels_true).size()[0])/self.n
 
 
 
@@ -127,6 +128,8 @@ if __name__ == '__main__':
     print(algorithm.H)
     algorithm.rank_threshold()
     print(algorithm.C)
+    print(algorithm.F)
+    algorithm.reseed(2)
     print(algorithm.F)
 
 
