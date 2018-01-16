@@ -24,11 +24,6 @@ class Algorithm:
         v = torch.ones(self.n) # 1D tesnor with values
         return torch.sparse.FloatTensor(i, v).to_dense()
 
-    @property
-    def labels(self):
-        # Return a vector with labels for each class as specified by the current Indicator matrix F
-        return torch.max(self.F, dim=1)[1].type(torch.DoubleTensor)
-
     @staticmethod
     def random_partition(n, R):
         # Creates a random partition with equal number of nodes in each class n/R
@@ -70,7 +65,6 @@ class Algorithm:
         max_nodes_per_class = self.constraints[1]
 
         node_order = torch.randperm(self.n)
-
         for node_index in node_order:
             node_heat = self.H[node_index]
             node_ranks = torch.topk(node_heat, self.R, dim=0)[1] # Order classes by heat score
@@ -93,12 +87,15 @@ class Algorithm:
 
         nodes_per_class = dict(zip(range(self.R), [0]*self.R))
         node_order = torch.randperm(self.n)
-        self.C = torch.zeros(self.n, 1) # Reset the partition
         for node_index in node_order:
             node_class = int(torch.nonzero(self.F[node_index])) # only has one element, the index of the nonzero element
             if nodes_per_class[node_class] < seed_count:
                 nodes_per_class[node_class] += 1
-                selfC[node_index] = node_class
+                self.C[node_index] = node_class
+            else:
+                self.C[node_index] = 0
+
+        self.H = self.F.clone()
 
     def purity(self, labels_true):
         return (self.n - torch.nonzero(self.labels - labels_true).size()[0])/self.n
@@ -119,20 +116,13 @@ if __name__ == '__main__':
     graph_W = torch.from_numpy(small_W)
 
     algorithm = Algorithm(W=graph_W, R=n_clusters, a=0.99, constraints=(3, 5))
+
+    algorithm.diffuse(30)
+    algorithm.random_threshold()
+    algorithm.reseed(2)
+    print(algorithm.H)
     print(algorithm.C)
     print(algorithm.F)
-    algorithm.diffuse(30)
-    print(algorithm.H)
-    print(algorithm.C)
-    algorithm.random_threshold()
-    print(algorithm.H)
-    print(algorithm.C)
-    algorithm.diffuse(30)
-    print(algorithm.H)
-    print(algorithm.C)
-    algorithm.rank_threshold()
-    print(algorithm.H)
-    print(algorithm.C)
 
     # for seeds in range(1, 30, 1):
     #     algorithm.diffuse(30)
