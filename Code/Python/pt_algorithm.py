@@ -29,12 +29,7 @@ class Algorithm:
     @staticmethod
     def random_partition(n, R):
         # Creates a random partition with equal number of nodes in each class n/R
-        C = torch.randperm(R)
-        for _ in range(n // R - 1):
-            C = torch.cat((C, torch.randperm(R)), 0)
-        if n % R > 0:
-            C = torch.cat((C, torch.randperm(n % R)), 0)
-        return C
+        return torch.fmod(torch.randperm(n), R)
 
     def diffuse(self, iterations):
         # Apply one diffuse step to the current heat distribution H
