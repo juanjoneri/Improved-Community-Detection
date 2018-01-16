@@ -12,7 +12,6 @@ class Algorithm:
         self.n = self.W.size()[0]                   # Number of vertexes
         self.R = R                                  # Target number of communities
         self.C = self.random_partition(self.n, R)   # Initiate with a random partition
-        self.F = self.C_F()                         # Indicator of current partition
         self.constraints = constraints              # (min, max) tuple with constraints for sizes of partition
 
         self.D = torch.sum(self.W, 0)               # Degree vector(connections per node)
@@ -20,11 +19,12 @@ class Algorithm:
 
         self.a = torch.FloatTensor([a]) # Alpha: diffusion parameter
 
-    def C_F(self):
-        i = torch.cat((torch.arange(self.n).type(torch.LongTensor), self.C,), 0).view(2, self.n) #2D tensor with coordinates of values
+
+    @property
+    def F(self):
+        i = torch.cat((torch.arange(self.n).type(torch.LongTensor), self.C), 0).view(2, self.n) #2D tensor with coordinates of values
         v = torch.ones(self.n) # 1D tesnor with values
         return torch.sparse.FloatTensor(i, v)
-
 
     @staticmethod
     def random_partition(n, R):
