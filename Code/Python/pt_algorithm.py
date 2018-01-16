@@ -7,17 +7,34 @@ from my_packages.clusters.nx_np import nx_np
 
 class Algorithm:
 
-    def __init__(self, W, F, R, a, constraints):
-        self.W = W                      # Graph's adj matrix
-        self.R = R                      # Target number of communities
-        self.F = F                      # Indicator of current partition
-        self.constraints = constraints  # (min, max) tuple with constraints for sizes of partition
+    def __init__(self, W, R, a, constraints):
+        self.W = W                                  # Graph's adj matrix
+        self.n = self.W.size()[0]                   # Number of vertexes
+        self.R = R                                  # Target number of communities
+        self.C = self.random_partition(self.n, R)   # Initiate with a random partition
+        self.F = self.C_F()                         # Indicator of current partition
+        self.constraints = constraints              # (min, max) tuple with constraints for sizes of partition
 
-        self.D = torch.sum(self.W, 0)   # Degree vector(connections per node)
-        self.H = F.clone()              # Heat bump: initialized to F
+        self.D = torch.sum(self.W, 0)               # Degree vector(connections per node)
+        self.H = self.F.clone()                          # Heat bump: initialized to F
 
-        self.n = self.W.size()[0]       # Number of vertexes
         self.a = torch.FloatTensor([a]) # Alpha: diffusion parameter
+
+    def C_F(self):
+        i = torch.cat((self.C, torch.arange(self.n).type(torch.LongTensor)), 0).view(2, self.n) #2D tensor with coordinates of values
+        v = torch.ones(self.n) # 1D tesnor with values
+        return torch.sparse.FloatTensor(i, v)
+
+
+    @staticmethod
+    def random_partition(n, R):
+        # Creates a random partition with equal number of nodes in each class n/R
+        C = torch.randperm(R)
+        for _ in range(n // R - 1):
+            C = torch.cat((C, torch.randperm(R)), 0)
+        if n % R > 0:
+            C = torch.cat((C, torch.randperm(n % R)), 0)
+        return C
 
     def diffuse(self, iterations):
         # Apply one diffuse step to the current heat distribution H
@@ -41,6 +58,7 @@ class Algorithm:
         new_F = torch.zeros(self.n, self.R) # Reset the partition
 
         for rank in ranks: # 1st, 2nd ... Rth places
+        # torch.randperm(4)
             class_order = np.arange(self.R)
             np.random.shuffle(class_order)
             for class_index in class_order: # class 2, 9, ... randomly
@@ -91,7 +109,7 @@ class Algorithm:
                 new_F[node_index][node_class] = 1
         self.F = new_F
 
-    def accuracy(self, labels_true):
+    def purity(self, labels_true):
         return (self.n - torch.nonzero(self.labels - labels_true).size()[0])/self.n
 
 
@@ -103,27 +121,26 @@ class Algorithm:
 
 if __name__ == '__main__':
 
-    G = import_cluster("my_packages/clusters/examples/hm-1200/hm-1200n-cluster.csv")
-    coordinates, labels_true = import_metadata("my_packages/clusters/examples/hm-1200/hm-1200n-meta.csv")
+    G = import_cluster("my_packages/clusters/examples/120-4/120n-4c-cluster.csv")
+    coordinates, labels_true = import_metadata("my_packages/clusters/examples/120-4/120n-4c-meta.csv")
     small_W, small_R = nx_np(G)
 
-    n_nodes = 1200
-    n_clusters = 2
+    n_nodes = 120
+    n_clusters = 4
 
     graph_W = torch.from_numpy(small_W)
-    initial_F = torch.zeros(n_nodes, n_clusters)
-    initial_F[0][1] = 1
-    initial_F[177][0] = 1
 
-    algorithm = Algorithm(W=graph_W, F=initial_F, R=n_clusters, a=0.99, constraints=(590, 610))
+    algorithm = Algorithm(W=graph_W, R=n_clusters, a=0.99, constraints=(25, 30))
+    print(algorithm.C)
+    print(algorithm.F)
 
-    for seeds in range(1, 600, 10):
-        algorithm.diffuse(30)
-        algorithm.random_threshold()
-        algorithm.reseed(seeds)
-    algorithm.diffuse(30)
-    algorithm.rank_threshold()
-
-    print(algorithm.accuracy(torch.from_numpy(labels_true)))
-    plot_G(G, coordinates, algorithm.labels)
-    # plot_G(G, coordinates, labels_true)
+    # for seeds in range(1, 30, 1):
+    #     algorithm.diffuse(30)
+    #     algorithm.random_threshold()
+    #     algorithm.reseed(seeds)
+    # algorithm.diffuse(30)
+    # algorithm.rank_threshold()
+    #
+    # print(algorithm.accuracy(torch.from_numpy(labels_true)))
+    # plot_G(G, coordinates, algorithm.labels)
+    # # plot_G(G, coordinates, labels_true)
