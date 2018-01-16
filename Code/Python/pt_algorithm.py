@@ -9,22 +9,25 @@ class Algorithm:
 
     def __init__(self, W, R, a, constraints):
         self.W = W                                  # Graph's adj matrix
-        self.n = self.W.size()[0]                   # Number of vertexes
         self.R = R                                  # Target number of communities
-        self.C = self.random_partition(self.n, R)   # Initiate with a random partition
+        self.a = torch.FloatTensor([a])             # Alpha: diffusion parameter
         self.constraints = constraints              # (min, max) tuple with constraints for sizes of partition
 
+        self.n = self.W.size()[0]                   # Number of vertexes
+        self.C = self.random_partition(self.n, R)   # Initiate with a random partition
         self.D = torch.sum(self.W, 0)               # Degree vector(connections per node)
-        self.H = self.F.clone()                          # Heat bump: initialized to F
-
-        self.a = torch.FloatTensor([a]) # Alpha: diffusion parameter
-
+        self.H = self.F.clone()                     # Heat bump: initialized to F
 
     @property
     def F(self):
         i = torch.cat((torch.arange(self.n).type(torch.LongTensor), self.C), 0).view(2, self.n) #2D tensor with coordinates of values
         v = torch.ones(self.n) # 1D tesnor with values
-        return torch.sparse.FloatTensor(i, v)
+        return torch.sparse.FloatTensor(i, v).to_dense()
+
+    @property
+    def labels(self):
+        # Return a vector with labels for each class as specified by the current Indicator matrix F
+        return torch.max(self.F, dim=1)[1].type(torch.DoubleTensor)
 
     @staticmethod
     def random_partition(n, R):
@@ -50,38 +53,33 @@ class Algorithm:
         nodes_per_class = dict(zip(range(self.R), [0]*self.R)) # Mantain a size constraint
 
         ranks = torch.topk(self.H, self.n, dim=0)[1] # Order classes by heat score
-        new_F = torch.zeros(self.n, self.R) # Reset the partition
 
         for rank in ranks: # 1st, 2nd ... Rth places
-        # torch.randperm(4)
-            class_order = np.arange(self.R)
-            np.random.shuffle(class_order)
+            class_order = torch.randperm(self.R)
             for class_index in class_order: # class 2, 9, ... randomly
                 node = rank[class_index]
                 if node not in allocated and nodes_per_class[class_index] <= max_nodes_per_class:
-                    new_F[node][class_index] = 1
+                    self.C[node] = class_index
                     allocated.add(node)
                     nodes_per_class[class_index] += 1
-        self.F = new_F
+
         self.H = self.F.clone()
 
     def random_threshold(self):
         nodes_per_class = dict(zip(range(self.R), [0]*self.R)) # Mantain a size constraint
         max_nodes_per_class = self.constraints[1]
 
-        node_order = np.arange(self.n)
-        np.random.shuffle(node_order)
-        new_F = torch.zeros(self.n, self.R) # Reset the partition
+        node_order = torch.randperm(self.n)
 
         for node_index in node_order:
             node_heat = self.H[node_index]
             node_ranks = torch.topk(node_heat, self.R, dim=0)[1] # Order classes by heat score
             for class_choice in node_ranks:
                 if nodes_per_class[class_choice] <= max_nodes_per_class:
-                    new_F[node_index][class_choice] = 1
+                    self.C[node_index] = class_choice
                     nodes_per_class[class_choice] += 1
                     break
-        self.F = new_F
+
         self.H = self.F.clone()
 
 
@@ -94,40 +92,47 @@ class Algorithm:
             raise Exception('Too many seeds')
 
         nodes_per_class = dict(zip(range(self.R), [0]*self.R))
-        node_order = np.arange(self.n)
-        np.random.shuffle(node_order)
-        new_F = torch.zeros(self.n, self.R) # Reset the partition
+        node_order = torch.randperm(self.n)
+        self.C = torch.zeros(self.n, 1) # Reset the partition
         for node_index in node_order:
             node_class = int(torch.nonzero(self.F[node_index])) # only has one element, the index of the nonzero element
             if nodes_per_class[node_class] < seed_count:
                 nodes_per_class[node_class] += 1
-                new_F[node_index][node_class] = 1
-        self.F = new_F
+                selfC[node_index] = node_class
 
     def purity(self, labels_true):
         return (self.n - torch.nonzero(self.labels - labels_true).size()[0])/self.n
 
 
-    @property
-    def labels(self):
-        # Return a vector with labels for each class as specified by the current Indicator matrix F
-        return torch.max(self.F, dim=1)[1].type(torch.DoubleTensor)
+
 
 
 if __name__ == '__main__':
 
-    G = import_cluster("my_packages/clusters/examples/120-4/120n-4c-cluster.csv")
-    coordinates, labels_true = import_metadata("my_packages/clusters/examples/120-4/120n-4c-meta.csv")
+    G = import_cluster("my_packages/clusters/examples/12-3/12n-3c-cluster.csv")
+    coordinates, labels_true = import_metadata("my_packages/clusters/examples/12-3/12n-3c-meta.csv")
     small_W, small_R = nx_np(G)
 
-    n_nodes = 120
-    n_clusters = 4
+    n_nodes = 12
+    n_clusters = 3
 
     graph_W = torch.from_numpy(small_W)
 
-    algorithm = Algorithm(W=graph_W, R=n_clusters, a=0.99, constraints=(25, 30))
+    algorithm = Algorithm(W=graph_W, R=n_clusters, a=0.99, constraints=(3, 5))
     print(algorithm.C)
-    print(algorithm.F.to_dense())
+    print(algorithm.F)
+    algorithm.diffuse(30)
+    print(algorithm.H)
+    print(algorithm.C)
+    algorithm.random_threshold()
+    print(algorithm.H)
+    print(algorithm.C)
+    algorithm.diffuse(30)
+    print(algorithm.H)
+    print(algorithm.C)
+    algorithm.rank_threshold()
+    print(algorithm.H)
+    print(algorithm.C)
 
     # for seeds in range(1, 30, 1):
     #     algorithm.diffuse(30)
