@@ -44,6 +44,18 @@ def import_cluster(file_name):
     G.add_edges_from(zip(x, y))
     return G
 
+def import_dense(file_name):
+    import torch
+    # imprts a big graph stored as adjacency list
+    data = pd.read_csv(file_name, header=None).values
+    x, y = data[:,0], data[:,1]
+    n = x.size
+    X = torch.from_numpy(x).type(torch.LongTensor)
+    Y = torch.from_numpy(y).type(torch.LongTensor)
+    i = torch.cat((X, Y), 0).view(2, n)
+    v = torch.ones(n) # 1D tesnor with values
+    return torch.sparse.FloatTensor(i, v)
+
 def import_metadata(file_name):
     data = pd.read_csv(file_name, header=None).values
     xs, ys = data[:,2], data[:,3]
