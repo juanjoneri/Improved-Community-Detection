@@ -22,7 +22,7 @@ def plot_G(G, coordinates=None, classes=[], continuous=False, file_name=""):
     if not continuous:
         # colors represent descrete classes
         if len(classes) > 1:
-            colors_list = ['r', 'b', 'g', 'y', 'w', 'c', 'm', 'k', '#eeefff', '#00efff']
+            colors_list = ['r', 'b', 'g', 'y', 'c', 'm', 'k', '#eeefff', '#00efff', 'w']
             colors = list(map(lambda i: colors_list[int(i)], classes))
         # colors represent a continuous value
         else:
