@@ -1,25 +1,35 @@
 import torch
 import numpy as np
 
-from my_packages.clusters.save_cluster import import_example, import_cluster, import_metadata
+from my_packages.clusters.save_cluster import import_example, import_cluster, import_metadata, import_dense
 from my_packages.clusters.plot_cluster import plot_G
 from my_packages.clusters.nx_np import nx_np
 
 class Algorithm:
 
-    def __init__(self, W, R, a, constraints):
-        self.W = W                                  # Graph's adj matrix
+    def __init__(self, W, R, n, a, constraints):
+        self.W = W                                  # Graph's adj matrix (sparse)
         self.R = R                                  # Target number of communities
         self.a = torch.FloatTensor([a])             # Alpha: diffusion parameter
         self.constraints = constraints              # (min, max) tuple with constraints for sizes of partition
 
-        self.n = self.W.size()[0]                   # Number of vertexes
+        self.n = n                                  # Number of vertices
         self.F = self.random_partition(self.n, R)   # Initiate with a random partition
-        self.D = torch.sum(self.W, 0)               # Degree vector(connections per node)
         self.H = self.F.clone()                     # Heat bump: initialized to F
 
         if (self.n - (R-1)*constraints[1] < constraints[0]):
             print("Alert: Not well defined constraints.")
+
+    @property
+    def D(self):
+        i = W._indices().view(-1, 1).numpy()
+        x, y =  np.unique(i, return_counts=True)
+        X = torch.from_numpy(x).type(torch.LongTensor)
+        Y = torch.from_numpy(y).type(torch.LongTensor)
+        i = torch.cat((X, Y), 0).view(2, self.n)
+        v = torch.ones(self.n)
+        return torch.sparse.FloatTensor(i, v)
+
 
     @property
     def C(self):
@@ -117,37 +127,37 @@ class Algorithm:
 
 
 
-
-
 if __name__ == '__main__':
 
-    G = import_cluster("my_packages/clusters/examples/hm-1200/hm-1200n-cluster.csv")
-    coordinates, labels_true = import_metadata("my_packages/clusters/examples/hm-1200/hm-1200n-meta.csv")
+    G = import_cluster("my_packages/clusters/examples/12-3/12n-3c-cluster.csv")
+    coordinates, labels_true = import_metadata("my_packages/clusters/examples/12-3/12n-3c-meta.csv")
     small_W, small_R = nx_np(G)
 
-    n_nodes = 1200
-    n_clusters = 2
+    n_nodes = 12
+    n_clusters = 3
 
-    graph_W = torch.from_numpy(small_W)
+    graph_W = torch.from_numpy(small_W).type(torch.DoubleTensor)
+    W = import_dense("my_packages/clusters/examples/12-3/12n-3c-cluster.csv")
 
-    algorithm = Algorithm(W=graph_W, R=n_clusters, a=0.99, constraints=(590, 610))
+    algorithm = Algorithm(W=W, R=n_clusters, n=n_nodes, a=0.9, constraints=(4, 4))
+    print(algorithm.D)
 
-    iteration = 1
-    plot_G(G, coordinates, algorithm.C, file_name="0A-random-partition")
-    algorithm.reseed(1)
-    plot_G(G, coordinates, algorithm.C, file_name="0B-1-seed".format(iteration))
+    # iteration = 1
+    # algorithm.reseed(1)
+    # algorithm.diffuse(30)
+    # algorithm.rank_threshold()
+    # plot_G(G, coordinates, algorithm.C)
 
-    for seed_count in range(2, 200, 10):
-        algorithm.diffuse(30)
-        iteration += 1
-        algorithm.rank_threshold()
-        plot_G(G, coordinates, algorithm.C, file_name="{}A-rank_threshold".format(iteration, seed_count))
-        algorithm.reseed(seed_count)
-        plot_G(G, coordinates, algorithm.C, file_name="{}B-{}-seed".format(iteration, seed_count))
-
-    algorithm.diffuse(30)
-    algorithm.rank_threshold()
-    plot_G(G, coordinates, algorithm.C, file_name="final-partition")
+    # for seed_count in range(2, 10, 2):
+    #     algorithm.diffuse(30)
+    #     iteration += 1
+    #     algorithm.rank_threshold()
+    #     plot_G(G, coordinates, algorithm.C)
+    #     algorithm.reseed(seed_count)
+    #
+    # algorithm.diffuse(30)
+    # algorithm.rank_threshold()
+    plot_G(G, coordinates, labels_true)
 
     #
     # print(algorithm.accuracy(torch.from_numpy(labels_true)))
