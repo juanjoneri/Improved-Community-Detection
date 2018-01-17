@@ -22,13 +22,10 @@ class Algorithm:
 
     @property
     def D(self):
-        i = W._indices().view(-1, 1).numpy()
+        # return the degree vector of an undirected graph
+        i = W._indices()[0].numpy()
         x, y =  np.unique(i, return_counts=True)
-        X = torch.from_numpy(x).type(torch.LongTensor)
-        Y = torch.from_numpy(y).type(torch.LongTensor)
-        i = torch.cat((X, Y), 0).view(2, self.n)
-        v = torch.ones(self.n)
-        return torch.sparse.FloatTensor(i, v)
+        return x[y]
 
 
     @property
@@ -140,7 +137,7 @@ if __name__ == '__main__':
     W = import_dense("my_packages/clusters/examples/180-9/180n-9c-cluster.csv")
 
     algorithm = Algorithm(W=W, R=n_clusters, n=n_nodes, a=0.9, constraints=(28, 32))
-    print(algorithm.W.to_dense())
+    print(algorithm.D)
 
     # iteration = 1
     # algorithm.reseed(1)
