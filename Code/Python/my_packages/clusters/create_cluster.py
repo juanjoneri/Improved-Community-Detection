@@ -85,7 +85,7 @@ def cluster(nodes, k):
                 closest_distance = d
                 closest_node = j
         G.add_edge(i, closest_node)
-    return G.to_directed()
+    return G.to_directed() # directed specifies both ways (makes it undirected)
 
 def create_cluster(n_nodes, centers, std, k):
     '''

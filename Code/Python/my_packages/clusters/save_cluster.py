@@ -42,7 +42,7 @@ def import_cluster(file_name):
     G = nx.Graph()
     G.add_nodes_from(range(np.max(x)))
     G.add_edges_from(zip(x, y))
-    return G
+    return G.to_directed() # just in case
 
 def import_dense(file_name):
     import torch

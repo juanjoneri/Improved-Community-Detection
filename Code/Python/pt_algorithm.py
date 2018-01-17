@@ -129,18 +129,18 @@ class Algorithm:
 
 if __name__ == '__main__':
 
-    G = import_cluster("my_packages/clusters/examples/12-3/12n-3c-cluster.csv")
-    coordinates, labels_true = import_metadata("my_packages/clusters/examples/12-3/12n-3c-meta.csv")
+    G = import_cluster("my_packages/clusters/examples/180-9/180n-9c-cluster.csv")
+    coordinates, labels_true = import_metadata("my_packages/clusters/examples/180-9/180n-9c-meta.csv")
     small_W, small_R = nx_np(G)
 
-    n_nodes = 12
-    n_clusters = 3
+    n_nodes = 180
+    n_clusters = 9
 
     graph_W = torch.from_numpy(small_W).type(torch.DoubleTensor)
-    W = import_dense("my_packages/clusters/examples/12-3/12n-3c-cluster.csv")
+    W = import_dense("my_packages/clusters/examples/180-9/180n-9c-cluster.csv")
 
-    algorithm = Algorithm(W=W, R=n_clusters, n=n_nodes, a=0.9, constraints=(4, 4))
-    print(algorithm.D)
+    algorithm = Algorithm(W=W, R=n_clusters, n=n_nodes, a=0.9, constraints=(28, 32))
+    print(algorithm.W.to_dense())
 
     # iteration = 1
     # algorithm.reseed(1)
