@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 
-from my_packages.clusters.save_cluster import import_example, import_cluster, import_metadata, import_dense
+from my_packages.clusters.save_cluster import *
 from my_packages.clusters.plot_cluster import plot_G
 from my_packages.clusters.nx_np import nx_np
 
@@ -30,7 +30,7 @@ class Algorithm:
 
     @property
     def C(self):
-        # vector with name of the classes, or R if not assigned
+        # vector with name of the classes, or 10 if not assigned
         C = torch.zeros(self.n, 1)
         for row_index in range(self.n):
             row = self.F[row_index]
@@ -134,7 +134,7 @@ if __name__ == '__main__':
     n_clusters = 9
 
     graph_W = torch.from_numpy(small_W).type(torch.DoubleTensor)
-    W = import_dense("my_packages/clusters/examples/180-9/180n-9c-cluster.csv")
+    W = import_sparse("my_packages/clusters/examples/180-9/180n-9c-cluster.csv")
 
     algorithm = Algorithm(W=W, R=n_clusters, n=n_nodes, a=0.9, constraints=(28, 32))
     print(algorithm.D)

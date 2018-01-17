@@ -44,7 +44,7 @@ def import_cluster(file_name):
     G.add_edges_from(zip(x, y))
     return G.to_directed() # just in case
 
-def import_dense(file_name):
+def import_sparse(file_name):
     import torch
     # imprts a big graph stored as adjacency list
     data = pd.read_csv(file_name, header=None).values
