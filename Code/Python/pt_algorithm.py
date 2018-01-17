@@ -37,7 +37,7 @@ class Algorithm:
             if row.byte().any():
                 C[row_index] = torch.max(row, dim=0)[1]
             else:
-                C[row_index] = 4 # default to white for unnalocated classes
+                C[row_index] = 10 # default to white for unnalocated classes
         return C
 
     @staticmethod
