@@ -85,7 +85,7 @@ def cluster(nodes, k):
                 closest_distance = d
                 closest_node = j
         G.add_edge(i, closest_node)
-    return G
+    return G.to_directed()
 
 def create_cluster(n_nodes, centers, std, k):
     '''
@@ -136,7 +136,7 @@ if __name__ == '__main__':
         sys.exit()
     centers = [(c[i], c[i+1]) for i in range(0, len(c), 2)]
     d = avg_center_distance(centers)
-    G, coordinates, labels = create_cluster(n_nodes, centers, std=d/3.9, k=d/2 )
+    G, coordinates, labels = create_cluster(n_nodes, centers, std=d/4.5, k=d/2 )
 
     plot_G(G, coordinates, labels)
     plot_G(G, coordinates)
