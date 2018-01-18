@@ -63,6 +63,11 @@ def import_metadata(file_name):
     labels = data[:,1]
     return coordinates, labels
 
+def import_labels(file_name):
+    data = pd.read_csv(file_name, header=None).values
+    labels = data[:,0]
+    return labels
+
 def import_example(size='small'):
     base = examples[size]
     cluster_path = os.path.join(script_dir, base + 'cluster.csv')
