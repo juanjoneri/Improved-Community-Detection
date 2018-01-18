@@ -10,10 +10,10 @@ class Algorithm:
     def __init__(self, W, R, n, a, constraints):
         self.W = W                                  # Graph's adj matrix (sparse)
         self.R = R                                  # Target number of communities
+        self.n = n                                  # Number of vertices
         self.a = torch.FloatTensor([a])             # Alpha: diffusion parameter
         self.constraints = constraints              # (min, max) tuple with constraints for sizes of partition
 
-        self.n = n                                  # Number of vertices
         self.F = self.random_partition(self.n, R)   # Initiate with a random partition
         self.H = self.F.clone()                     # Heat bump: initialized to F
 
@@ -37,7 +37,7 @@ class Algorithm:
         # return the degree vector of an undirected graph
         i = W._indices()[0].numpy()
         x, y =  np.unique(i, return_counts=True)
-        return x[y]
+        return torch.from_numpy(x[y])
 
     @staticmethod
     def random_partition(n, R):
@@ -49,9 +49,11 @@ class Algorithm:
 
     def diffuse(self, iterations):
         # Apply one diffuse step to the current heat distribution H
-        I = torch.eye(self.n)
-        D_ = torch.diag(torch.pow(self.D, -0.5))
-        Op = torch.mm(D_, torch.mm(self.W, D_)).type(torch.FloatTensor)
+        # diagonal = torch.fmod(torch.arange(2 * self.n).type(torch.LongTensor), self.n).view(2, self.n)
+        # D_half_mat = torch.diag(diagonal, D_half)
+        D_half = torch.pow(self.D.type(torch.FloatTensor), -0.5)
+        D_exp_diag = torch.diag(D_exp)
+        Op = torch.mm(D_half_mat, torch.mm(self.W, D_exp_diag)).type(torch.FloatTensor)
         for _ in range(iterations):
             self.H = torch.mul(self.a, torch.mm(Op, self.H)) + torch.mul((1 - self.a), self.F)
 
@@ -141,7 +143,7 @@ if __name__ == '__main__':
     W = import_sparse("my_packages/clusters/examples/180-9/180n-9c-cluster.csv")
 
     algorithm = Algorithm(W=W, R=n_clusters, n=n_nodes, a=0.9, constraints=(28, 32))
-    print(algorithm.purity(labels_true))
+    algorithm.diffuse(10)
 
     # iteration = 1
     # algorithm.reseed(1)
