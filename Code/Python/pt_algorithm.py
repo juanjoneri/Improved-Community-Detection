@@ -1,5 +1,6 @@
 import torch
 import numpy as np
+import scipy
 
 from my_packages.clusters.save_cluster import *
 from my_packages.clusters.plot_cluster import plot_G
@@ -16,13 +17,14 @@ class Algorithm:
 
         self.F = self.random_partition(self.n, R)   # Initiate with a random partition
         self.H = self.F.clone()                     # Heat bump: initialized to F
+        self.Op = self.create_operator()
 
         if (self.n - (R-1)*constraints[1] < constraints[0]):
             print("Alert: Not well defined constraints.")
 
     @property
     def C(self):
-        # vector with name of the classes, or 10 if not assigned
+        # pytorch vector with name of the classes, or 10 if not assigned
         C = torch.zeros(self.n, 1).type(torch.LongTensor)
         for row_index in range(self.n):
             row = self.F[row_index]
@@ -34,8 +36,8 @@ class Algorithm:
 
     @property
     def D(self):
-        # return the degree vector of an undirected graph
-        i = W._indices()[0].numpy()
+        # pytorch degree vector of an undirected graph
+        i = self.W._indices()[0].numpy()
         x, y =  np.unique(i, return_counts=True)
         return torch.from_numpy(x[y])
 
@@ -49,13 +51,21 @@ class Algorithm:
 
     def diffuse(self, iterations):
         # Apply one diffuse step to the current heat distribution H
-        # diagonal = torch.fmod(torch.arange(2 * self.n).type(torch.LongTensor), self.n).view(2, self.n)
-        # D_half_mat = torch.diag(diagonal, D_half)
-        D_exp = torch.pow(self.D.type(torch.FloatTensor), -0.5)
-        D_exp_diag = torch.diag(D_exp)
-        Op = torch.mm(D_exp_diag, torch.mm(self.W, D_exp_diag)).type(torch.FloatTensor)
         for _ in range(iterations):
-            self.H = torch.mul(self.a, torch.mm(Op, self.H)) + torch.mul((1 - self.a), self.F)
+            self.H = torch.mul(self.a, torch.mm(self.Op, self.H)) + torch.mul((1 - self.a), self.F)
+
+    def create_operator(self):
+        # using some scipy since pytorch is in betta and has no sparse X sparse yet
+        self.D.numpy()
+        D_pow = np.power(self.D.numpy(), -0.5)
+        D_ = scipy.sparse.diags(D_pow)
+        i = self.W._indices().numpy()
+        v = self.W._values()
+        W = scipy.sparse.coo_matrix((v, (i[0,:], i[1,:])), shape=(self.n, self.n))
+        Op = D_ * W * D_
+        return torch.sparse.FloatTensor(\
+            torch.from_numpy(i).type(torch.LongTensor),\
+            torch.from_numpy(Op.data).type(torch.FloatTensor))
 
     def rank_threshold(self):
         '''
@@ -157,13 +167,8 @@ if __name__ == '__main__':
         algorithm.rank_threshold()
         print(iteration, algorithm.purity(labels_true))
         algorithm.reseed(seed_count)
-    #
+    
     algorithm.diffuse(30)
     algorithm.rank_threshold()
     print("final: ", algorithm.purity(labels_true))
     plot_G(G, coordinates, algorithm.C)
-
-    #
-    # print(algorithm.accuracy(torch.from_numpy(labels_true)))
-    # plot_G(G, coordinates, algorithm.C)
-    # # plot_G(G, coordinates, labels_true)
