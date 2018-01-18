@@ -121,13 +121,14 @@ class Algorithm:
         self.H = self.F.clone()
 
     def purity(self, labels_true):
-        C = self.C.numpy()
-        correct = 0
-        for r in range(self.R):
-            i = np.where(C == r)[0] # indices of nodes in class r
-            correct += np.bincount(labels_true[i].astype(int))[0] # occurences of top choice
-        return correct / self.n
-
+        # from http://www.caner.io/purity-in-python.html
+        A = np.c_[(self.C.numpy(), labels_true)].astype(int)
+        n_accurate = 0.
+        for j in np.unique(A[:,0]):
+            z = A[A[:,0] == j, 1]
+            x = np.argmax(np.bincount(z))
+            n_accurate += len(z[z == x])
+        return round(n_accurate / self.n * 100, 2)
 
 
 if __name__ == '__main__':
@@ -142,13 +143,13 @@ if __name__ == '__main__':
     graph_W = torch.from_numpy(small_W).type(torch.DoubleTensor)
     W = import_sparse("my_packages/clusters/examples/180-9/180n-9c-cluster.csv")
 
-    algorithm = Algorithm(W=W, R=n_clusters, n=n_nodes, a=0.9, constraints=(28, 32))
+    algorithm = Algorithm(W=W, R=n_clusters, n=n_nodes, a=0.9, constraints=(28, 22))
 
     iteration = 1
     algorithm.reseed(1)
     algorithm.diffuse(20)
     algorithm.rank_threshold()
-    print(algorithm.purity(labels_true))
+    print(iteration, algorithm.purity(labels_true))
 
     for seed_count in range(2, 10, 2):
         algorithm.diffuse(20)
@@ -156,7 +157,7 @@ if __name__ == '__main__':
         algorithm.rank_threshold()
         print(iteration, algorithm.purity(labels_true))
         algorithm.reseed(seed_count)
-
+    #
     algorithm.diffuse(30)
     algorithm.rank_threshold()
     print("final: ", algorithm.purity(labels_true))
