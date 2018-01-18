@@ -30,7 +30,7 @@ class Algorithm:
                 C[row_index] = torch.max(row, dim=0)[1]
             else:
                 C[row_index] = 10 # default to white for unnalocated classes
-                return C
+        return C
 
     @property
     def D(self):
@@ -126,7 +126,7 @@ class Algorithm:
         for r in range(self.R):
             i = np.where(C == r)[0] # indices of nodes in class r
             correct += np.bincount(labels_true[i].astype(int))[0] # occurences of top choice
-        print(correct / self.n)
+        return correct / self.n
 
 
 
@@ -143,24 +143,24 @@ if __name__ == '__main__':
     W = import_sparse("my_packages/clusters/examples/180-9/180n-9c-cluster.csv")
 
     algorithm = Algorithm(W=W, R=n_clusters, n=n_nodes, a=0.9, constraints=(28, 32))
-    algorithm.diffuse(10)
 
-    # iteration = 1
-    # algorithm.reseed(1)
-    # algorithm.diffuse(30)
-    # algorithm.rank_threshold()
-    # plot_G(G, coordinates, algorithm.C)
+    iteration = 1
+    algorithm.reseed(1)
+    algorithm.diffuse(20)
+    algorithm.rank_threshold()
+    print(algorithm.purity(labels_true))
 
-    # for seed_count in range(2, 10, 2):
-    #     algorithm.diffuse(30)
-    #     iteration += 1
-    #     algorithm.rank_threshold()
-    #     plot_G(G, coordinates, algorithm.C)
-    #     algorithm.reseed(seed_count)
-    #
-    # algorithm.diffuse(30)
-    # algorithm.rank_threshold()
-    plot_G(G, coordinates, labels_true)
+    for seed_count in range(2, 10, 2):
+        algorithm.diffuse(20)
+        iteration += 1
+        algorithm.rank_threshold()
+        print(iteration, algorithm.purity(labels_true))
+        algorithm.reseed(seed_count)
+
+    algorithm.diffuse(30)
+    algorithm.rank_threshold()
+    print("final: ", algorithm.purity(labels_true))
+    plot_G(G, coordinates, algorithm.C)
 
     #
     # print(algorithm.accuracy(torch.from_numpy(labels_true)))
