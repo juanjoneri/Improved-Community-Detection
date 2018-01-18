@@ -21,14 +21,6 @@ class Algorithm:
             print("Alert: Not well defined constraints.")
 
     @property
-    def D(self):
-        # return the degree vector of an undirected graph
-        i = W._indices()[0].numpy()
-        x, y =  np.unique(i, return_counts=True)
-        return x[y]
-
-
-    @property
     def C(self):
         # vector with name of the classes, or 10 if not assigned
         C = torch.zeros(self.n, 1).type(torch.LongTensor)
@@ -38,7 +30,14 @@ class Algorithm:
                 C[row_index] = torch.max(row, dim=0)[1]
             else:
                 C[row_index] = 10 # default to white for unnalocated classes
-        return C
+                return C
+
+    @property
+    def D(self):
+        # return the degree vector of an undirected graph
+        i = W._indices()[0].numpy()
+        x, y =  np.unique(i, return_counts=True)
+        return x[y]
 
     @staticmethod
     def random_partition(n, R):
@@ -126,7 +125,6 @@ class Algorithm:
             i = np.where(C == r)[0] # indices of nodes in class r
             correct += np.bincount(labels_true[i].astype(int))[0] # occurences of top choice
         print(correct / self.n)
-        # return (self.n - torch.nonzero(self.C - labels_true).size()[0])/self.n
 
 
 
