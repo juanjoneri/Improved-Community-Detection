@@ -31,7 +31,7 @@ class Algorithm:
     @property
     def C(self):
         # vector with name of the classes, or 10 if not assigned
-        C = torch.zeros(self.n, 1)
+        C = torch.zeros(self.n, 1).type(torch.LongTensor)
         for row_index in range(self.n):
             row = self.F[row_index]
             if row.byte().any():
@@ -120,7 +120,13 @@ class Algorithm:
         self.H = self.F.clone()
 
     def purity(self, labels_true):
-        return (self.n - torch.nonzero(self.C - labels_true).size()[0])/self.n
+        C = self.C.numpy()
+        correct = 0
+        for r in range(self.R):
+            i = np.where(C == r)[0] # indices of nodes in class r
+            correct += np.bincount(labels_true[i].astype(int))[0] # occurences of top choice
+        print(correct / self.n)
+        # return (self.n - torch.nonzero(self.C - labels_true).size()[0])/self.n
 
 
 
@@ -137,7 +143,7 @@ if __name__ == '__main__':
     W = import_sparse("my_packages/clusters/examples/180-9/180n-9c-cluster.csv")
 
     algorithm = Algorithm(W=W, R=n_clusters, n=n_nodes, a=0.9, constraints=(28, 32))
-    print(algorithm.D)
+    print(algorithm.purity(labels_true))
 
     # iteration = 1
     # algorithm.reseed(1)
