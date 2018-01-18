@@ -17,7 +17,7 @@ class Algorithm:
 
         self.F = self.random_partition(self.n, R)   # Initiate with a random partition
         self.H = self.F.clone()                     # Heat bump: initialized to F
-        self.Op = self.create_operator()
+        self.Op = self._create_operator()
 
         if (self.n - (R-1)*constraints[1] < constraints[0]):
             print("Alert: Not well defined constraints.")
@@ -54,7 +54,7 @@ class Algorithm:
         for _ in range(iterations):
             self.H = torch.mul(self.a, torch.mm(self.Op, self.H)) + torch.mul((1 - self.a), self.F)
 
-    def create_operator(self):
+    def _create_operator(self):
         # using some scipy since pytorch is in betta and has no sparse X sparse yet
         self.D.numpy()
         D_pow = np.power(self.D.numpy(), -0.5)
@@ -167,7 +167,7 @@ if __name__ == '__main__':
         algorithm.rank_threshold()
         print(iteration, algorithm.purity(labels_true))
         algorithm.reseed(seed_count)
-    
+
     algorithm.diffuse(30)
     algorithm.rank_threshold()
     print("final: ", algorithm.purity(labels_true))
