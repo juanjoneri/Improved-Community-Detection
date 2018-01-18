@@ -55,7 +55,7 @@ class Algorithm:
             self.H = torch.mul(self.a, torch.mm(self.Op, self.H)) + torch.mul((1 - self.a), self.F)
 
     def _create_operator(self):
-        # using some scipy since pytorch is in betta and has no sparse X sparse yet
+        # using scipy since pytorch is in betta and has no sparse X sparse yet
         self.D.numpy()
         D_pow = np.power(self.D.numpy(), -0.5)
         D_ = scipy.sparse.diags(D_pow)
