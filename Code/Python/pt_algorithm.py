@@ -51,9 +51,9 @@ class Algorithm:
         # Apply one diffuse step to the current heat distribution H
         # diagonal = torch.fmod(torch.arange(2 * self.n).type(torch.LongTensor), self.n).view(2, self.n)
         # D_half_mat = torch.diag(diagonal, D_half)
-        D_half = torch.pow(self.D.type(torch.FloatTensor), -0.5)
+        D_exp = torch.pow(self.D.type(torch.FloatTensor), -0.5)
         D_exp_diag = torch.diag(D_exp)
-        Op = torch.mm(D_half_mat, torch.mm(self.W, D_exp_diag)).type(torch.FloatTensor)
+        Op = torch.mm(D_exp_diag, torch.mm(self.W, D_exp_diag)).type(torch.FloatTensor)
         for _ in range(iterations):
             self.H = torch.mul(self.a, torch.mm(Op, self.H)) + torch.mul((1 - self.a), self.F)
 
