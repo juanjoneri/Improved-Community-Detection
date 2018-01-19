@@ -34,14 +34,6 @@ class Algorithm:
                 C[row_index] = 10 # default to white for unnalocated classes
         return C
 
-    @property
-    def D(self):
-        # pytorch degree vector of an undirected graph
-        # nodes must all be connected
-        i = self.W._indices()[0].numpy()
-        x, y =  np.unique(i, return_counts=True)
-        return torch.from_numpy(x[y])
-
     @staticmethod
     def random_partition(n, R):
         # Creates a random partition with equal number of nodes in each class n/R
@@ -57,12 +49,12 @@ class Algorithm:
 
     def _create_operator(self):
         # using scipy since pytorch is in betta and has no sparse X sparse yet
-        self.D.numpy()
-        D_pow = np.power(self.D.numpy(), -0.5)
-        D_ = scipy.sparse.diags(D_pow)
         i = self.W._indices().numpy()
         v = self.W._values()
         W = scipy.sparse.coo_matrix((v, (i[0,:], i[1,:])), shape=(self.n, self.n))
+        D = W.sum(axis=1).T
+        D_pow = np.power(D, -0.5)
+        D_ = scipy.sparse.spdiags(D_pow, [0], self.n, self.n)
         Op = D_ * W * D_
         return torch.sparse.FloatTensor(\
             torch.from_numpy(i).type(torch.LongTensor),\
@@ -122,6 +114,7 @@ class Algorithm:
         nodes_per_class = dict(zip(range(self.R), [0]*self.R))
         node_order = torch.randperm(self.n)
         for node_index in node_order:
+            if all(value == seed_count for value in nodes_per_class.values()): break
             node_class = int(self.C[node_index]) # only has one element, the index of the nonzero element
             if nodes_per_class[node_class] < seed_count:
                 nodes_per_class[node_class] += 1
@@ -144,7 +137,7 @@ class Algorithm:
 
 if __name__ == '__main__':
 
-    n_nodes = 20000
+    n_nodes = 19934
     n_clusters = 20
 
     W = import_sparse("../Experiments/20news/20news.csv")
@@ -153,13 +146,11 @@ if __name__ == '__main__':
     algorithm = Algorithm(W=W, R=n_clusters, n=n_nodes, a=0.9, constraints=(990, 1010))
 
     iteration = 1
+    print("reseeding")
     algorithm.reseed(1)
-    algorithm.diffuse(15)
-    algorithm.rank_threshold()
-    print(iteration, algorithm.purity(labels_true))
 
     for seed_count in range(2, 300, 10):
-        iteration += 1
+        iteration +=
         algorithm.diffuse(15)
         algorithm.rank_threshold()
         print(iteration, algorithm.purity(labels_true))
