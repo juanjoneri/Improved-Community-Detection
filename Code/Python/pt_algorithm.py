@@ -37,6 +37,7 @@ class Algorithm:
     @property
     def D(self):
         # pytorch degree vector of an undirected graph
+        # nodes must all be connected
         i = self.W._indices()[0].numpy()
         x, y =  np.unique(i, return_counts=True)
         return torch.from_numpy(x[y])
@@ -143,32 +144,27 @@ class Algorithm:
 
 if __name__ == '__main__':
 
-    G = import_cluster("my_packages/clusters/examples/180-9/180n-9c-cluster.csv")
-    coordinates, labels_true = import_metadata("my_packages/clusters/examples/180-9/180n-9c-meta.csv")
-    small_W, small_R = nx_np(G)
+    n_nodes = 20000
+    n_clusters = 20
 
-    n_nodes = 180
-    n_clusters = 9
+    W = import_sparse("../Experiments/20news/20news.csv")
+    labels_true = import_labels("../Experiments/20news/20news_labels.csv")
 
-    graph_W = torch.from_numpy(small_W).type(torch.DoubleTensor)
-    W = import_sparse("my_packages/clusters/examples/180-9/180n-9c-cluster.csv")
-
-    algorithm = Algorithm(W=W, R=n_clusters, n=n_nodes, a=0.9, constraints=(28, 22))
+    algorithm = Algorithm(W=W, R=n_clusters, n=n_nodes, a=0.9, constraints=(990, 1010))
 
     iteration = 1
     algorithm.reseed(1)
-    algorithm.diffuse(20)
+    algorithm.diffuse(15)
     algorithm.rank_threshold()
     print(iteration, algorithm.purity(labels_true))
 
-    for seed_count in range(2, 10, 2):
-        algorithm.diffuse(20)
+    for seed_count in range(2, 300, 10):
         iteration += 1
+        algorithm.diffuse(15)
         algorithm.rank_threshold()
         print(iteration, algorithm.purity(labels_true))
         algorithm.reseed(seed_count)
 
-    algorithm.diffuse(30)
+    algorithm.diffuse(15)
     algorithm.rank_threshold()
     print("final: ", algorithm.purity(labels_true))
-    plot_G(G, coordinates, algorithm.C)
