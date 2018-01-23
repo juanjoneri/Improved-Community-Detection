@@ -136,6 +136,7 @@ class Algorithm:
 
 
 if __name__ == '__main__':
+    import math
 
     n_nodes = 19934
     n_clusters = 20
@@ -145,17 +146,15 @@ if __name__ == '__main__':
 
     algorithm = Algorithm(W=W, R=n_clusters, n=n_nodes, a=0.9, constraints=(990, 1010))
 
-    iteration = 1
-    print("reseeding")
     algorithm.reseed(1)
 
-    for seed_count in range(2, 300, 10):
-        iteration +=
-        algorithm.diffuse(15)
-        algorithm.rank_threshold()
-        print(iteration, algorithm.purity(labels_true))
-        algorithm.reseed(seed_count)
+    seed_counts = np.arange(1.3, 100, .3)
+    for seed_count in seed_counts:
+        algorithm.diffuse(12)
+        algorithm.random_threshold()
+        print(seed_count, algorithm.purity(labels_true))
+        algorithm.reseed(math.ceil(seed_count))
 
-    algorithm.diffuse(15)
+    algorithm.diffuse(12)
     algorithm.rank_threshold()
     print("final: ", algorithm.purity(labels_true))
